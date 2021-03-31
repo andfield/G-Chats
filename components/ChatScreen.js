@@ -10,6 +10,7 @@ import { InsertEmoticon, MicOutlined } from "@material-ui/icons";
 import getReciepentEmail from "../utils/getReciepentEmail";
 import Message from "../components/Message";
 import { useState } from "react";
+import TimeAgo from "timeago-react"
 import firebase from "firebase";
 
 function ChatScreen({ chat, messages }) {
@@ -26,6 +27,13 @@ function ChatScreen({ chat, messages }) {
       .doc(router.query.id)
       .collection("messages")
       .orderBy("timestamp", "asc")
+  );
+
+  //Fetch reciepent
+  const [reciepentSnapshot] = useCollection(
+    db
+      .collection("users")
+      .where("email", "==", getReciepentEmail(chat.users, user))
   );
 
   //Function for show message returns some jsx
@@ -69,14 +77,26 @@ function ChatScreen({ chat, messages }) {
 
     setInput("");
   };
-
+  const reciepent = reciepentSnapshot?.docs?.[0]?.data();
   return (
     <Container>
       <Header>
-        <Avatar />
+        {reciepent ? (
+          <Avatar src={reciepent?.photoURL} />
+        ) : (
+          <Avatar>{reciepentEmail[0]}</Avatar>
+        )}
         <HeaderInfo>
-          <h3>{reciepentEmail}</h3>
-          <p>Last Seen...</p>
+          <h3>{reciepent?.name}</h3>
+          {reciepentSnapshot ? (
+              <p>Last active: {' '}
+              {reciepent?.lastSeen?.toDate() ? (
+                <TimeAgo datetime={reciepent?.lastSeen?.toDate()} />
+              ): "Unavailable"}
+              </p>
+          ): (
+              <p>Loading last active...</p>
+          )}
         </HeaderInfo>
         <HeaderIcons>
           <IconButton>
