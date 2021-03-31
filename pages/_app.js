@@ -13,7 +13,7 @@ function MyApp({ Component, pageProps }) {
     //when the user first signin capture there details using useEffect.
     useEffect(() => {
       if(user){
-        console.log(user)
+      
         db.collection("users").doc(user.uid).set({
           name: user.displayName,
           email: user.email,

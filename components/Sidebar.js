@@ -3,26 +3,75 @@ import { Avatar, IconButton, Button } from "@material-ui/core";
 import ChatIcon from "@material-ui/icons/Chat";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import SearchIcon from "@material-ui/icons/Search";
-import * as EmailValidator from "email-validator"
+import { auth, db } from "../firebase";
+import * as EmailValidator from "email-validator";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { useCollection } from "react-firebase-hooks/firestore";
+import Chat from "../components/Chat";
+import { useState } from "react";
 
 function Sidebar() {
+  //Get user from use auth state.
+  const [user] = useAuthState(auth);
 
-    //Function to create new chat.
-    const createChat = () => {
-        //Prompt user to get an email.
-        const input = prompt('Please enter an email of the user you want to chat with.')
-        if(!input) return null; 
-
-        //Check if the email is valid
-        if(EmailValidator.validate(input)) {
-            // If email is valid push to DB Chats collection.
-        }
+  // Function to check if the reciepent email has an account.
+  const hasAnAccount = async(reciepentEmail) => {
+    const snapshot = await db
+      .collection("users")
+      .where("email", "==", reciepentEmail)
+      .get();
+    if (!snapshot.empty) {
+        console.log("Came here")
+      return true;
     }
+    return false;
+  };
+
+  //Create a irl chat reference to the db using firebase hooks.
+  const userChatRef = db
+    .collection("chats")
+    .where("users", "array-contains", user.email);
+  const [chatsSnapshot] = useCollection(userChatRef);
+
+  //Function to create new chat.
+  const createChat = async() => {
+    //Prompt user to get an email.
+    const input = prompt(
+      "Please enter an email of the user you want to chat with."
+    );
+
+    if (!input) return null;
+
+    //Check if the email is valid
+    if (
+      EmailValidator.validate(input) &&
+      !chatAlreadyExists(input) &&
+      input !== user.email
+    ) {
+      if (await hasAnAccount(input) == true) {
+        // If email is valid and the chat doesnt exists push to DB Chats collection.
+        db.collection("chats").add({
+          //adding email for now but try using name later.
+          users: [user.email, input],
+        });
+      } else alert("User does not exist");
+    }
+    else alert("Invalid user please check if a chat already exists.")
+  };
+
+  //Function to check if the chat already exists.
+  const chatAlreadyExists = (reciepentEmail) =>
+    !!chatsSnapshot?.docs.find(
+      (chat) =>
+        chat.data().users.find((user) => user === reciepentEmail)?.length > 0
+    );
+
+  //Function to create new chat room.
 
   return (
     <Container>
       <Header>
-        <UserAvatar />
+        <UserAvatar onClick={() => auth.signOut()} />
 
         <IconsContainer>
           <IconButton>
@@ -42,7 +91,9 @@ function Sidebar() {
       <SidebarButton onClick={createChat}>Star a new chat</SidebarButton>
 
       {/* This is where list of chats live. */}
-
+      {chatsSnapshot?.docs.map((chat) => (
+        <Chat key={chat.id} id={chat.id} user={chat.data().users} />
+      ))}
     </Container>
   );
 }
