@@ -15,13 +15,13 @@ function Sidebar() {
   const [user] = useAuthState(auth);
 
   // Function to check if the reciepent email has an account.
-  const hasAnAccount = async(reciepentEmail) => {
+  const hasAnAccount = async (reciepentEmail) => {
     const snapshot = await db
       .collection("users")
       .where("email", "==", reciepentEmail)
       .get();
     if (!snapshot.empty) {
-        console.log("Came here")
+      console.log("Came here");
       return true;
     }
     return false;
@@ -34,7 +34,7 @@ function Sidebar() {
   const [chatsSnapshot] = useCollection(userChatRef);
 
   //Function to create new chat.
-  const createChat = async() => {
+  const createChat = async () => {
     //Prompt user to get an email.
     const input = prompt(
       "Please enter an email of the user you want to chat with."
@@ -48,15 +48,14 @@ function Sidebar() {
       !chatAlreadyExists(input) &&
       input !== user.email
     ) {
-      if (await hasAnAccount(input) == true) {
+      if ((await hasAnAccount(input)) == true) {
         // If email is valid and the chat doesnt exists push to DB Chats collection.
         db.collection("chats").add({
           //adding email for now but try using name later.
           users: [user.email, input],
         });
       } else alert("User does not exist");
-    }
-    else alert("Invalid user please check if a chat already exists.")
+    } else alert("Invalid user please check if a chat already exists.");
   };
 
   //Function to check if the chat already exists.
@@ -101,7 +100,21 @@ function Sidebar() {
 export default Sidebar;
 
 //styled components
-const Container = styled.div``;
+const Container = styled.div`
+  flex: 0.45;
+  border-right: 1px solid whitesmoke;
+  height: 100vh;
+  min-width: 300px;
+  max-width: 350px;
+  overflow-y: scroll;
+
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+`;
 
 const Header = styled.div`
   display: flex;

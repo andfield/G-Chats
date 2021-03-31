@@ -5,7 +5,6 @@ import { auth, db } from "../firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
 
 function Chat({ id, users }) {
   const router = useRouter();
@@ -46,7 +45,7 @@ const Container = styled.div`
   word-break: break-word;
 
   :hover {
-    background-color: #edd6ff;
+    background-color: #fffcad;
   }
 `;
 
