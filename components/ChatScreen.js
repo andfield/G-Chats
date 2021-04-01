@@ -91,6 +91,7 @@ function ChatScreen({ chat, messages }) {
 
   return (
     <Container>
+      
       <Header>
         {reciepent ? (
           <Avatar src={reciepent?.photoURL} />
