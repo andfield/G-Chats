@@ -1,5 +1,6 @@
-import Head from 'next/head'
-import Sidebar from '../components/Sidebar'
+import Head from "next/head";
+import Sidebar from "../components/Sidebar";
+import HomePage from "../pages/Home";
 
 export default function Home() {
   return (
@@ -8,8 +9,7 @@ export default function Home() {
         <title>G-Chats</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
-      <Sidebar />
+      <HomePage />
     </div>
-  )
+  );
 }

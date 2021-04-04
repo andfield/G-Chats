@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Avatar, IconButton, Button } from "@material-ui/core";
+import { Avatar, IconButton, Button, Tooltip } from "@material-ui/core";
 import ChatIcon from "@material-ui/icons/Chat";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import SearchIcon from "@material-ui/icons/Search";
@@ -70,11 +70,13 @@ function Sidebar() {
   return (
     <Container>
       <Header>
-        <UserAvatar onClick={() => auth.signOut()} src={user.photoURL} />
-
+        <Tooltip title="Logout">
+          <UserAvatar onClick={() => auth.signOut()} src={user.photoURL} />
+        </Tooltip>
+        <h3 style={{marginLeft: "-0.8em"}}>{user.displayName}</h3>
         <IconsContainer>
           <IconButton>
-            <ChatIcon />
+            <ChatIcon onClick={createChat}/>
           </IconButton>
           <IconButton>
             <MoreVertIcon />
