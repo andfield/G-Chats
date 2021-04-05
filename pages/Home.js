@@ -4,7 +4,7 @@ import Sidebar from "../components/Sidebar";
 import ChatScreen from "../components/ChatScreen";
 import { auth, db } from "../firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { Container } from '@material-ui/core'
+import { Container, Hidden } from '@material-ui/core'
  
 function HomePage() {
   const [user] = useAuthState(auth);
@@ -15,6 +15,7 @@ function HomePage() {
         <title>Sup! {user?.displayName}</title>
       </Head>
       <Sidebar />
+      <Hidden smDown>
       <ChatContainer>
         <HomeScreenContainer>
           <RoundedImg src="Gif.gif" alt="logo" />
@@ -23,6 +24,7 @@ function HomePage() {
         </HomeScreenContainer>
         {/* <ChatScreen chat={null} messages={null}/> */}
       </ChatContainer>
+      </Hidden>
     </MainContainer>
   );
 }
@@ -44,6 +46,8 @@ const ChatContainer = styled.div`
   -ms-overflow-style: none;
   /* For Firefox */
   scrollbar-width: none;
+
+  
 `;
 
 const HomeScreenContainer = styled.div`
