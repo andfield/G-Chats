@@ -168,6 +168,11 @@ const HeaderInfo = styled.div`
     font-size: 14px;
     color: grey;
   }
+  @media (max-width: 1024px){
+    >p{
+      margin-top: 0px
+    }
+  }
 `;
 
 const HeaderIcons = styled.div``;
