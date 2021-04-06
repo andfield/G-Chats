@@ -12,14 +12,15 @@ import Message from "../components/Message";
 import { useState, useRef } from "react";
 import TimeAgo from "timeago-react";
 import firebase from "firebase";
-import 'emoji-mart/css/emoji-mart.css'
-import { Picker } from 'emoji-mart'
+import "emoji-mart/css/emoji-mart.css";
+import { Picker } from "emoji-mart";
 
 function ChatScreen({ chat, messages }) {
   //States
   const [input, setInput] = useState("");
   const [user] = useAuthState(auth);
   const [emojiDisplay, setEmojiDisplay] = useState("none");
+  const [emoji, setEmoji] = useState("");
 
   const reciepentEmail = getReciepentEmail(chat.users, user);
   const endOfMessageRef = useRef(null);
@@ -71,7 +72,6 @@ function ChatScreen({ chat, messages }) {
   //Function to send message.
   const sendMessage = (e) => {
     e.preventDefault();
-
     //when a user sends message change there last seen on DB.
     db.collection("users").doc(user.uid).set(
       {
@@ -91,6 +91,25 @@ function ChatScreen({ chat, messages }) {
     ScrollToBottom();
   };
   const reciepent = reciepentSnapshot?.docs?.[0]?.data();
+
+  //Function to Toggle Emojis.
+  const emojiFunction = () => {
+    if (emojiDisplay == "none") {
+      window.scrollTo({ top: 400, behavior: "smooth" });
+      setEmojiDisplay("");
+    } else {
+      setEmojiDisplay("none");
+    }
+  };
+
+  //Function to select emoji and store it.
+  const selectEmoji = (e) => {
+    let sym = e.unified.split("-");
+    let codeArray = [];
+    codeArray.push("0x" + sym[0]);
+    let emoji = String.fromCodePoint(...codeArray)
+    setInput(input + emoji)
+  };
 
   return (
     <Container>
@@ -126,20 +145,22 @@ function ChatScreen({ chat, messages }) {
       </Header>
       <MessageContainer>
         {showMessages()}
+
         <EndOfMessage ref={endOfMessageRef} />
-        <Picker 
-        style={{width: '100%', display: emojiDisplay}}
-      />
       </MessageContainer>
 
       <InputContainer>
-        <InsertEmoticon onClick={() => emojiDisplay == 'none' ? setEmojiDisplay("") : setEmojiDisplay("none")}/>
+        <InsertEmoticon onClick={emojiFunction} />
         <Input value={input} onChange={(e) => setInput(e.target.value)} />
         <button hidden disabled={!input} type="submit" onClick={sendMessage}>
           Send message
         </button>
         <MicOutlined />
       </InputContainer>
+      <Picker
+        style={{ width: "100%", display: emojiDisplay }}
+        onSelect={selectEmoji}
+      />
     </Container>
   );
 }
