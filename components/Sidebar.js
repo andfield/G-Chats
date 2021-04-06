@@ -9,6 +9,7 @@ import {useAuthState} from "react-firebase-hooks/auth"
 import {useCollection} from "react-firebase-hooks/firestore"
 import Chat from "../components/Chat"
 import {useState} from "react"
+import Search from "./Search"
 
 function Sidebar() {
   //Get user from use auth state.
@@ -84,7 +85,7 @@ function Sidebar() {
         </IconsContainer>
       </Header>
 
-      <Search>
+      {/* <Search>
         <CustomTextField
           label="Search in chats"
           variant="outlined"
@@ -93,10 +94,11 @@ function Sidebar() {
               <SearchIcon color="primary" />
             ),
           }}
-
           style={{width: "100%", backgroundColor: "rgba(211, 196, 227, 0.8)"}}
         />
-      </Search>
+      
+      </Search> */}
+        <Search uEmail={user.email}/>
 
       <SidebarButton onClick={createChat} variant="outlined" >Star a new chat</SidebarButton>
 
@@ -158,10 +160,10 @@ const IconsContainer=styled.div`
   justify-content: space-between;
 `
 
-const Search=styled.div`
-  display: flex;
-  padding: 20px;
-`
+// const Search=styled.div`
+//   display: flex;
+//   padding: 20px;
+// `
 const CustomTextField=styled(TextField)`
   &&& {
     :hover{
