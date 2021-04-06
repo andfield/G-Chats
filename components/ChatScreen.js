@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "../firebase";
 import { useRouter } from "next/router";
-import { Avatar, IconButton } from "@material-ui/core";
+import { Avatar, Hidden, IconButton } from "@material-ui/core";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import AttachFileIcon from "@material-ui/icons/AttachFile";
 import { useCollection } from "react-firebase-hooks/firestore";
@@ -10,6 +10,7 @@ import {
   InsertEmoticon,
   MicOutlined,
   ArrowForwardIos,
+  ArrowBackIos,
 } from "@material-ui/icons";
 import getReciepentEmail from "../utils/getReciepentEmail";
 import Message from "../components/Message";
@@ -118,6 +119,9 @@ function ChatScreen({ chat, messages }) {
   return (
     <Container>
       <Header>
+        <Hidden mdUp>
+          <ArrowBackIos onClick={() => router.push('/')} style={{ marginRight: "5px" }} />
+        </Hidden>
         {reciepent ? (
           <Avatar src={reciepent?.photoURL} />
         ) : (
@@ -163,7 +167,7 @@ function ChatScreen({ chat, messages }) {
           <ArrowForwardIos onClick={sendMessage} />
         </MainInput>
         <Picker
-          style={{ width: "100%", display: emojiDisplay, marginTop: '20px'}}
+          style={{ width: "100%", display: emojiDisplay, marginTop: "20px" }}
           onSelect={selectEmoji}
         />
       </InputContainer>
@@ -203,6 +207,11 @@ const HeaderInfo = styled.div`
   @media (max-width: 1024px) {
     > p {
       margin-top: 0px;
+    }
+  }
+  @media(max-width: 540px) {
+    >p {
+      font-size: 0.8em
     }
   }
 `;
