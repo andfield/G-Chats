@@ -1,70 +1,82 @@
-import styled from "styled-components"
-import {Avatar, IconButton, Button, Tooltip, TextField, InputAdornment} from "@material-ui/core"
-import ChatIcon from "@material-ui/icons/Chat"
-import MoreVertIcon from "@material-ui/icons/MoreVert"
-import SearchIcon from "@material-ui/icons/Search"
-import {auth, db} from "../firebase"
-import * as EmailValidator from "email-validator"
-import {useAuthState} from "react-firebase-hooks/auth"
-import {useCollection} from "react-firebase-hooks/firestore"
-import Chat from "../components/Chat"
-import {useState} from "react"
-import SearchBar from "./Search"
+import styled from "styled-components";
+import {
+  Avatar,
+  IconButton,
+  Button,
+  Tooltip,
+  TextField,
+  InputAdornment,
+  Menu,
+  MenuItem,
+} from "@material-ui/core";
+import ChatIcon from "@material-ui/icons/Chat";
+import MoreVertIcon from "@material-ui/icons/MoreVert";
+import SearchIcon from "@material-ui/icons/Search";
+import { auth, db } from "../firebase";
+import * as EmailValidator from "email-validator";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { useCollection } from "react-firebase-hooks/firestore";
+import Chat from "../components/Chat";
+import { useState } from "react";
+import SearchBar from "./Search";
 
 function Sidebar() {
   //Get user from use auth state.
-  const [user]=useAuthState(auth)
+  const [user] = useAuthState(auth);
+
+  //Menubar state.
+  const[menuToggle, setMenuToggle] = useState(null);
 
   // Function to check if the reciepent email has an account.
-  const hasAnAccount=async (reciepentEmail) => {
-    const snapshot=await db
+  const hasAnAccount = async (reciepentEmail) => {
+    const snapshot = await db
       .collection("users")
       .where("email", "==", reciepentEmail)
-      .get()
+      .get();
     if (!snapshot.empty) {
-      console.log("Came here")
-      return true
+      console.log("Came here");
+      return true;
     }
-    return false
-  }
+    return false;
+  };
 
   //Create a irl chat reference to the db using firebase hooks.
-  const userChatRef=db
+  const userChatRef = db
     .collection("chats")
-    .where("users", "array-contains", user.email)
-  const [chatsSnapshot]=useCollection(userChatRef)
+    .where("users", "array-contains", user.email);
+  const [chatsSnapshot] = useCollection(userChatRef);
 
   //Function to create new chat.
-  const createChat=async () => {
+  const createChat = async () => {
     //Prompt user to get an email.
-    const input=prompt(
+    const input = prompt(
       "Please enter an email of the user you want to chat with."
-    )
+    );
 
-    if (!input) return null
+    if (!input) return null;
 
     //Check if the email is valid
     if (
-      EmailValidator.validate(input)&&
-      !chatAlreadyExists(input)&&
-      input!==user.email
+      EmailValidator.validate(input) &&
+      !chatAlreadyExists(input) &&
+      input !== user.email
     ) {
-      if ((await hasAnAccount(input))==true) {
+      if ((await hasAnAccount(input)) == true) {
         // If email is valid and the chat doesnt exists push to DB Chats collection.
         db.collection("chats").add({
           //adding email for now but try using name later.
           users: [user.email, input],
-        })
-      } else alert("User does not exist")
-    } else alert("Invalid user please check if a chat already exists.")
-  }
+        });
+      } else alert("User does not exist");
+    } else alert("Invalid user please check if a chat already exists.");
+  };
 
   //Function to check if the chat already exists.
-  const chatAlreadyExists=(reciepentEmail) =>
+  const chatAlreadyExists = (reciepentEmail) =>
     !!chatsSnapshot?.docs.find(
       (chat) =>
-        chat.data().users.find((user) => user===reciepentEmail)?.length>0
-    )
+        chat.data().users.find((user) => user === reciepentEmail)?.length > 0
+    );
 
   //Function to create new chat room.
 
@@ -79,32 +91,44 @@ function Sidebar() {
           <IconBtn onClick={createChat}>
             <ChatIcon />
           </IconBtn>
-          <IconBtn>
+          <IconBtn onClick={e => setMenuToggle(e.currentTarget)}>
             <MoreVertIcon />
           </IconBtn>
+          <Menu 
+            style={{marginTop: '50px', marginRight: '50px'}}
+            id="menu"
+            anchorEl={menuToggle}
+            keepMounted
+            open={Boolean(menuToggle)}
+            onClose={() => setMenuToggle(null)}
+          >
+            <MenuItem onClick={() => auth.signOut()}>Logout</MenuItem>
+            <MenuItem>T&C</MenuItem>
+
+          </Menu>
         </IconsContainer>
       </Header>
 
-       <Search>
+      <Search>
+        <SearchBar uEmail={user.email} />
+      </Search>
 
-       <SearchBar uEmail={user.email}/>
-      
-      </Search> 
-
-      <SidebarButton onClick={createChat} variant="outlined" >Star a new chat</SidebarButton>
+      <SidebarButton onClick={createChat} variant="outlined">
+        Star a new chat
+      </SidebarButton>
 
       {/* This is where list of chats live. */}
       {chatsSnapshot?.docs.map((chat) => (
         <Chat key={chat.id} id={chat.id} users={chat.data().users} />
       ))}
     </Container>
-  )
+  );
 }
 
-export default Sidebar
+export default Sidebar;
 
 //styled components
-const Container=styled.div`
+const Container = styled.div`
   flex: 1;
   border-right: 1px solid whitesmoke;
   height: 100vh;
@@ -119,67 +143,62 @@ const Container=styled.div`
   -ms-overflow-style: none;
   scrollbar-width: none;
 
-  @media (max-width: 540px){
+  @media (max-width: 540px) {
     display: flex;
     flex-direction: column;
     min-width: 100%;
   }
-`
+`;
 
-const Header=styled.div`
+const Header = styled.div`
   display: flex;
   position: sticky;
   top: 0;
-  background: #7261A3;
+  background: #7261a3;
   z-index: 1;
   justify-content: space-between;
   align-items: center;
   padding: 15px;
   height: 80px;
   border-bottom: 1px solid whitesmoke;
-`
+`;
 
-const UserAvatar=styled(Avatar)`
+const UserAvatar = styled(Avatar)`
   cursor: pointer;
   :hover {
     opacity: 0.8;
   }
-`
+`;
 
-const IconsContainer=styled.div`
+const IconsContainer = styled.div`
   display: flex;
   justify-content: space-between;
-`
+`;
 
-const Search=styled.div`
-  
+const Search = styled.div`
   padding: 20px;
-`
+`;
 
-const SidebarButton=styled(Button)`
+const SidebarButton = styled(Button)`
   width: 100%;
   /* Make sheeit important */
-  &&&{
+  &&& {
     margin-bottom: 10px;
-    :hover{
-    background-color: rgba(253, 231, 76, 0.8);
-  
+    :hover {
+      background-color: rgba(253, 231, 76, 0.8);
+    }
   }
-  }
-  
-`
+`;
 
-const UName=styled.h1`
+const UName = styled.h1`
   font-size: 1.2em;
   color: white;
   margin-left: -30px;
-`
+`;
 
-const IconBtn=styled(IconButton)`
-  
+const IconBtn = styled(IconButton)`
   &&& {
     color: white;
     padding: 6px;
   }
-
-`
+`;

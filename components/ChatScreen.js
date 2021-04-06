@@ -9,14 +9,17 @@ import { useCollection } from "react-firebase-hooks/firestore";
 import { InsertEmoticon, MicOutlined } from "@material-ui/icons";
 import getReciepentEmail from "../utils/getReciepentEmail";
 import Message from "../components/Message";
-import { useState, useRef} from "react";
+import { useState, useRef } from "react";
 import TimeAgo from "timeago-react";
 import firebase from "firebase";
+import 'emoji-mart/css/emoji-mart.css'
+import { Picker } from 'emoji-mart'
 
 function ChatScreen({ chat, messages }) {
   //States
   const [input, setInput] = useState("");
   const [user] = useAuthState(auth);
+  const [emojiDisplay, setEmojiDisplay] = useState("none");
 
   const reciepentEmail = getReciepentEmail(chat.users, user);
   const endOfMessageRef = useRef(null);
@@ -91,7 +94,6 @@ function ChatScreen({ chat, messages }) {
 
   return (
     <Container>
-      
       <Header>
         {reciepent ? (
           <Avatar src={reciepent?.photoURL} />
@@ -125,10 +127,13 @@ function ChatScreen({ chat, messages }) {
       <MessageContainer>
         {showMessages()}
         <EndOfMessage ref={endOfMessageRef} />
+        <Picker 
+        style={{width: '100%', display: emojiDisplay}}
+      />
       </MessageContainer>
 
       <InputContainer>
-        <InsertEmoticon />
+        <InsertEmoticon onClick={() => emojiDisplay == 'none' ? setEmojiDisplay("") : setEmojiDisplay("none")}/>
         <Input value={input} onChange={(e) => setInput(e.target.value)} />
         <button hidden disabled={!input} type="submit" onClick={sendMessage}>
           Send message
@@ -168,9 +173,9 @@ const HeaderInfo = styled.div`
     font-size: 14px;
     color: grey;
   }
-  @media (max-width: 1024px){
-    >p{
-      margin-top: 0px
+  @media (max-width: 1024px) {
+    > p {
+      margin-top: 0px;
     }
   }
 `;
@@ -184,7 +189,7 @@ const MessageContainer = styled.div`
 `;
 
 const EndOfMessage = styled.div`
-    margin-bottom: 50px;
+  margin-bottom: 50px;
 `;
 
 const Input = styled.input`
