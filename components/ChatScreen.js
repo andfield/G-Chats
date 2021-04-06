@@ -6,7 +6,11 @@ import { Avatar, IconButton } from "@material-ui/core";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import AttachFileIcon from "@material-ui/icons/AttachFile";
 import { useCollection } from "react-firebase-hooks/firestore";
-import { InsertEmoticon, MicOutlined } from "@material-ui/icons";
+import {
+  InsertEmoticon,
+  MicOutlined,
+  ArrowForwardIos,
+} from "@material-ui/icons";
 import getReciepentEmail from "../utils/getReciepentEmail";
 import Message from "../components/Message";
 import { useState, useRef } from "react";
@@ -88,6 +92,7 @@ function ChatScreen({ chat, messages }) {
     });
 
     setInput("");
+    setEmojiDisplay("none");
     ScrollToBottom();
   };
   const reciepent = reciepentSnapshot?.docs?.[0]?.data();
@@ -95,7 +100,6 @@ function ChatScreen({ chat, messages }) {
   //Function to Toggle Emojis.
   const emojiFunction = () => {
     if (emojiDisplay == "none") {
-      window.scrollTo({ top: 400, behavior: "smooth" });
       setEmojiDisplay("");
     } else {
       setEmojiDisplay("none");
@@ -107,8 +111,8 @@ function ChatScreen({ chat, messages }) {
     let sym = e.unified.split("-");
     let codeArray = [];
     codeArray.push("0x" + sym[0]);
-    let emoji = String.fromCodePoint(...codeArray)
-    setInput(input + emoji)
+    let emoji = String.fromCodePoint(...codeArray);
+    setInput(input + emoji);
   };
 
   return (
@@ -150,17 +154,19 @@ function ChatScreen({ chat, messages }) {
       </MessageContainer>
 
       <InputContainer>
-        <InsertEmoticon onClick={emojiFunction} />
-        <Input value={input} onChange={(e) => setInput(e.target.value)} />
-        <button hidden disabled={!input} type="submit" onClick={sendMessage}>
-          Send message
-        </button>
-        <MicOutlined />
+        <MainInput>
+          <InsertEmoticon onClick={emojiFunction} />
+          <Input value={input} onChange={(e) => setInput(e.target.value)} />
+          <button hidden disabled={!input} type="submit" onClick={sendMessage}>
+            Send message
+          </button>
+          <ArrowForwardIos onClick={sendMessage} />
+        </MainInput>
+        <Picker
+          style={{ width: "100%", display: emojiDisplay, marginTop: '20px'}}
+          onSelect={selectEmoji}
+        />
       </InputContainer>
-      <Picker
-        style={{ width: "100%", display: emojiDisplay }}
-        onSelect={selectEmoji}
-      />
     </Container>
   );
 }
@@ -219,6 +225,7 @@ const Input = styled.input`
   border: none;
   border-radius: 10px;
   background-color: whitesmoke;
+  border: 0.1em solid black;
   padding: 20px;
   margin-left: 15px;
   margin-right: 15px;
@@ -226,10 +233,17 @@ const Input = styled.input`
 
 const InputContainer = styled.form`
   display: flex;
+  flex-direction: column;
   align-items: center;
   padding: 10px;
   position: sticky;
   bottom: 0;
   background-color: white;
   z-index: 100;
+`;
+
+const MainInput = styled.div`
+  display: flex;
+  width: 100%;
+  align-items: center;
 `;
