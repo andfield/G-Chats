@@ -25,7 +25,7 @@ function Sidebar() {
   const [user] = useAuthState(auth);
 
   //Menubar state.
-  const[menuToggle, setMenuToggle] = useState(null);
+  const [menuToggle, setMenuToggle] = useState(null);
 
   // Function to check if the reciepent email has an account.
   const hasAnAccount = async (reciepentEmail) => {
@@ -46,15 +46,40 @@ function Sidebar() {
     .where("users", "array-contains", user.email);
   const [chatsSnapshot] = useCollection(userChatRef);
 
+  // //Create a IRL group reference to
+  // const userGroupRef = db
+  // .collection("groups")
+  // .where("users", "array-contains", user.email);
+  // const [groupSnapshot] = useCollection(userGroupRef);
+
+  //Function to check if the chat already exists.
+
+  const chatAlreadyExists = (reciepentEmail) =>
+    !!chatsSnapshot?.docs.find(
+      (chat) =>
+        chat.data().users.find((user) => user === reciepentEmail)?.length > 0
+    );
+
+  //Function to check if user is already in that group.
+  const userAlreadyInGroup = async (name) => {
+    const snapshot = await db
+      .collection("groups")
+      .where("groupName", "==", name)
+      .where("users", "array-contains", user.email)
+      .get();
+    if (!snapshot.empty) {
+      return false;
+    }
+    return true;
+  };
+
   //Function to create new chat.
   const createChat = async () => {
     //Prompt user to get an email.
     const input = prompt(
       "Please enter an email of the user you want to chat with."
     );
-
     if (!input) return null;
-
     //Check if the email is valid
     if (
       EmailValidator.validate(input) &&
@@ -71,14 +96,24 @@ function Sidebar() {
     } else alert("Invalid user please check if a chat already exists.");
   };
 
-  //Function to check if the chat already exists.
-  const chatAlreadyExists = (reciepentEmail) =>
-    !!chatsSnapshot?.docs.find(
-      (chat) =>
-        chat.data().users.find((user) => user === reciepentEmail)?.length > 0
-    );
-
   //Function to create new chat room.
+  const createGroup = async () => {
+    //get user input for group name.
+    const name = prompt("Please enter name for your group");
+
+    //Check if the group name already chatAlreadyExists
+    if ((await userAlreadyInGroup(name)) == true) {
+      //If everything is fine create the group.
+      await db.collection("groups").add({
+        groupName: name,
+        createdBy: user.email,
+        users: [user.email],
+      });
+    }
+    else{
+      alert("You are already in that group.")
+    }
+  };
 
   return (
     <Container>
@@ -91,11 +126,11 @@ function Sidebar() {
           <IconBtn onClick={createChat}>
             <ChatIcon />
           </IconBtn>
-          <IconBtn onClick={e => setMenuToggle(e.currentTarget)}>
+          <IconBtn onClick={(e) => setMenuToggle(e.currentTarget)}>
             <MoreVertIcon />
           </IconBtn>
-          <Menu 
-            style={{marginTop: '50px', marginRight: '50px'}}
+          <Menu
+            style={{ marginTop: "50px", marginRight: "50px" }}
             id="menu"
             anchorEl={menuToggle}
             keepMounted
@@ -104,7 +139,6 @@ function Sidebar() {
           >
             <MenuItem onClick={() => auth.signOut()}>Logout</MenuItem>
             <MenuItem>T&C</MenuItem>
-
           </Menu>
         </IconsContainer>
       </Header>
@@ -115,6 +149,9 @@ function Sidebar() {
 
       <SidebarButton onClick={createChat} variant="outlined">
         Star a new chat
+      </SidebarButton>
+      <SidebarButton onClick={createGroup} variant="outlined">
+        Star a new group
       </SidebarButton>
 
       {/* This is where list of chats live. */}
