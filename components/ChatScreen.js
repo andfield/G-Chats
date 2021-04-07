@@ -25,8 +25,7 @@ function ChatScreen({ chat, messages }) {
   const [input, setInput] = useState("");
   const [user] = useAuthState(auth);
   const [emojiDisplay, setEmojiDisplay] = useState("none");
-  const [emoji, setEmoji] = useState("");
-
+  
   const reciepentEmail = getReciepentEmail(chat.users, user);
   const endOfMessageRef = useRef(null);
 

@@ -46,11 +46,11 @@ function Sidebar() {
     .where("users", "array-contains", user.email);
   const [chatsSnapshot] = useCollection(userChatRef);
 
-  // //Create a IRL group reference to
-  // const userGroupRef = db
-  // .collection("groups")
-  // .where("users", "array-contains", user.email);
-  // const [groupSnapshot] = useCollection(userGroupRef);
+  //Create a IRL group reference to
+  const userGroupRef = db
+    .collection("groups")
+    .where("users", "array-contains", user.email);
+  const [groupSnapshot] = useCollection(userGroupRef);
 
   //Function to check if the chat already exists.
 
@@ -100,6 +100,7 @@ function Sidebar() {
   const createGroup = async () => {
     //get user input for group name.
     const name = prompt("Please enter name for your group");
+    const photoID = prompt("Please provid a photo for group avatar.");
 
     //Check if the group name already chatAlreadyExists
     if ((await userAlreadyInGroup(name)) == true) {
@@ -107,11 +108,11 @@ function Sidebar() {
       await db.collection("groups").add({
         groupName: name,
         createdBy: user.email,
+        photoURL: photoID,
         users: [user.email],
       });
-    }
-    else{
-      alert("You are already in that group.")
+    } else {
+      alert("You are already in that group.");
     }
   };
 
@@ -156,7 +157,22 @@ function Sidebar() {
 
       {/* This is where list of chats live. */}
       {chatsSnapshot?.docs.map((chat) => (
-        <Chat key={chat.id} id={chat.id} users={chat.data().users} />
+        <Chat
+          key={chat.id}
+          id={chat.id}
+          users={chat.data().users}
+          groupName={""}
+          groupURL={""}
+        />
+      ))}
+      {groupSnapshot?.docs.map((group) => (
+        <Chat
+          key={group.id}
+          id={group.id}
+          users={["", ""]}
+          groupName={group.data().groupName}
+          groupURL={group.data().photoURL}
+        />
       ))}
     </Container>
   );
