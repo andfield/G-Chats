@@ -4,7 +4,7 @@ import Sidebar from "../../components/Sidebar";
 import Head from "next/head"
 import {auth, db} from "../../firebase"
 import {useAuthState} from "react-firebase-hooks/auth"
-import ChatScreen from "../../components/ChatScreen"
+import GroupScreen from "../../components/GroupScreen"
 
 function Group({group, messages}) {
   const [user]=useAuthState(auth)
@@ -18,7 +18,7 @@ function Group({group, messages}) {
         <Sidebar />
     </Hidden>
     <ChatContainer>
-        <ChatScreen />
+        <GroupScreen group={group} messages={messages}/>
     </ChatContainer>
   </Container>
   )

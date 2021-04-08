@@ -1,19 +1,44 @@
-import { Avatar, Hidden } from "@material-ui/core";
-import { ArrowBackIos } from "@material-ui/icons";
+import {
+  Avatar,
+  Hidden,
+  Menu,
+  MenuItem,
+  IconButton,
+  Button,
+} from "@material-ui/core";
+import {
+  ArrowBackIos,
+  ArrowForwardIos,
+  InsertEmoticon,
+} from "@material-ui/icons";
 import styled from "styled-components";
 import { db, auth } from "../firebase";
+import firebase from "firebase";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { useRouter } from "next/router";
-import {useState, useEffect} from "react"
+import { useState, useEffect, useRef } from "react";
+import { AttachFile, MoreVert, Group } from "@material-ui/icons";
+import { Picker } from "emoji-mart";
+import { useAuthState } from "react-firebase-hooks/auth";
+import "emoji-mart/css/emoji-mart.css";
+import Message from "./Message";
 
 function GroupScreen({ group, messages }) {
   //Assign router.
   const router = useRouter();
 
+  //Current user.
+  const [user] = useAuthState(auth);
+
+  //Refs
+  const endOfMessageRef = useRef(null);
+
   //States
   const [userNames, setUserNames] = useState([]);
-  const [userEmails, setUserEmails] = useState(group.users)
-  
+  const [userEmails, setUserEmails] = useState(group.users);
+  const [input, setInput] = useState("");
+  const [menuToggle, setMenuToggle] = useState(null);
+  const [emojiDisplay, setEmojiDisplay] = useState("none");
 
   //Fetch all the messages for the group.
   const [messagesSnapshot] = useCollection(
@@ -25,25 +50,90 @@ function GroupScreen({ group, messages }) {
   );
 
   //useEffect to get names of all the users.
-  useEffect(async() => {
+  useEffect(async () => {
     const users = [];
-    // await userEmails.forEach( async (user) => {
-    //      await db.collection("users").where("email", "==", user).get()
-    //         .then(snapshot => {
-    //             snapshot.docs.forEach( u => {
-    //                 let name = u.data().name
-    //                users.push(name)
-    //             })
-    //         })
-    // })
-    for(const email of userEmails) {
-       await db.collection("users").where("email", "==", email).get()
-        .then(snapshot => {
-            users.push(snapshot.docs[0].data().name)
-        })
+
+    for (const email of userEmails) {
+      await db
+        .collection("users")
+        .where("email", "==", email)
+        .get()
+        .then((snapshot) => {
+          users.push(snapshot.docs[0].data().name);
+        });
     }
-    setUserNames(users)
-  }, [])
+    setUserNames(users);
+  }, []);
+
+  //Function to Show all the messages.
+  const showMessages = () => {
+    //If Client is faster
+    if(messagesSnapshot) {
+        return messagesSnapshot.docs.map( message => (
+            <Message
+                key={message.id}
+                user={message.data().user}
+                message={{
+                    ...message.data(),
+                    timestamp: message.data().timestamp?.toDate().getTime(),
+                }}
+            />
+        ))
+    }
+
+    //If SSR is faster.
+    return JSON.parse(messages).map( message => (
+        <Message key={message.id} user={message.user} message={message} />
+    ))
+  };
+
+  //Function to Toggle Emojis.
+  const emojiFunction = () => {
+    if (emojiDisplay == "none") {
+      setEmojiDisplay("");
+    } else {
+      setEmojiDisplay("none");
+    }
+  };
+
+  //Function to select Emojis.
+  const selectEmoji = (e) => {
+    let sym = e.unified.split("-");
+    let codeArray = [];
+    codeArray.push("0x" + sym[0]);
+    let emoji = String.fromCodePoint(...codeArray);
+    setInput(input + emoji);
+  };
+
+  //Function which allows ui to scroll to bottom when new message is typed.
+  const ScrollToBottom = () => {
+    endOfMessageRef.current.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  };
+
+  //Function to send Message.
+  const sendMessage = (event) => {
+    event.preventDefault();
+    //When a user sends message change their last seen on DB.
+    db.collection("users").doc(user.uid).set(
+      {
+        lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
+      },
+      { merge: true }
+    );
+    //Add Message to current group in DB.
+    db.collection("groups").doc(router.query.id).collection("messages").add({
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      message: input,
+      user: user.email,
+      photoURL: user.photoURL,
+    });
+    setInput("");
+    setEmojiDisplay("none");
+    ScrollToBottom();
+  };
 
   return (
     <Container>
@@ -61,15 +151,49 @@ function GroupScreen({ group, messages }) {
         )}
         <HeaderInfo>
           <h3>{group?.groupName}</h3>
-          <p></p>
-          {
-            // works
-            //   userNames.map(name => {
-            //       return <p key={name}>{name}</p>
-            //   })
-          }
         </HeaderInfo>
+        <HeaderIcons>
+          <IconButton onClick={(e) => setMenuToggle(e.currentTarget)}>
+            <Group />
+          </IconButton>
+          <Menu
+            style={{ marginTop: "50px", marginRight: "50px" }}
+            id="menu"
+            anchorEl={menuToggle}
+            keepMounted
+            open={Boolean(menuToggle)}
+            onClose={() => setMenuToggle(null)}
+          >
+            {userNames.map((name) => {
+              return <MenuItem>{name}</MenuItem>;
+            })}
+          </Menu>
+          <IconButton>
+            <AttachFile />
+          </IconButton>
+          <IconButton>
+            <MoreVert />
+          </IconButton>
+        </HeaderIcons>
       </Header>
+      <MessageContainer>
+        {showMessages()}
+        <EndOfMessage ref={endOfMessageRef} />
+      </MessageContainer>
+      <InputContainer>
+        <MainInput>
+          <InsertEmoticon onClick={emojiFunction} />
+          <Input value={input} onChange={(e) => setInput(e.target.value)} />
+          <button hidden disabled={!input} type="submit" onClick={sendMessage}>
+            Send Message
+          </button>
+          <ArrowForwardIos onClick={sendMessage} />
+        </MainInput>
+        <Picker
+          style={{ width: "100%", display: emojiDisplay, marginTop: "20px" }}
+          onSelect={selectEmoji}
+        />
+      </InputContainer>
     </Container>
   );
 }
@@ -154,4 +278,11 @@ const MainInput = styled.div`
   display: flex;
   width: 100%;
   align-items: center;
+`;
+
+const ViewUsers = styled(Button)`
+  &&& {
+    border-radius: 50px;
+    font-size: 0.5em;
+  }
 `;
