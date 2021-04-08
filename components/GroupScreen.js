@@ -11,7 +11,8 @@ function GroupScreen({ group, messages }) {
   const router = useRouter();
 
   //States
-  const [userNames, setUserNames] = useState();
+  const [userNames, setUserNames] = useState([]);
+  const [userEmails, setUserEmails] = useState(group.users)
   
 
   //Fetch all the messages for the group.
@@ -22,26 +23,27 @@ function GroupScreen({ group, messages }) {
       .collection("messages")
       .orderBy("timestamp", "asc")
   );
-  // Fetch all the users of the group
-//   const [usersSnapshot] = useCollection(
-//       db.
-//         .collection("")
-//   
-    const [users] = group.users.forEach( (user) => (useCollection(db.collection("users".where("email", "==", user))))
 
-  useEffect(() => {
-     group.users.forEach( user => {
-         method1(user)
-     })
+  //useEffect to get names of all the users.
+  useEffect(async() => {
+    const users = [];
+    // await userEmails.forEach( async (user) => {
+    //      await db.collection("users").where("email", "==", user).get()
+    //         .then(snapshot => {
+    //             snapshot.docs.forEach( u => {
+    //                 let name = u.data().name
+    //                users.push(name)
+    //             })
+    //         })
+    // })
+    for(const email of userEmails) {
+       await db.collection("users").where("email", "==", email).get()
+        .then(snapshot => {
+            users.push(snapshot.docs[0].data().name)
+        })
+    }
+    setUserNames(users)
   }, [])
-
-const method1 = async (email) => {
-    const [user] = useCollection(db.collection("users").where("email", "==", email))
-    
-    user.docs.map((user) => {
-        setUserNames(...userNames, user.data().name)
-    })
-}
 
   return (
     <Container>
@@ -59,8 +61,12 @@ const method1 = async (email) => {
         )}
         <HeaderInfo>
           <h3>{group?.groupName}</h3>
+          <p></p>
           {
-              console.log(userNames)
+            // works
+            //   userNames.map(name => {
+            //       return <p key={name}>{name}</p>
+            //   })
           }
         </HeaderInfo>
       </Header>
