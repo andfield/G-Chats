@@ -126,7 +126,7 @@ function ChatScreen({ chat, messages }) {
           />
         </Hidden>
         {reciepent ? (
-          <Avatar src={reciepent?.photoURL} si />
+          <Avatar src={reciepent?.photoURL} />
         ) : (
           <Avatar>{reciepentEmail[0]}</Avatar>
         )}
@@ -185,13 +185,15 @@ const Container = styled.div`
 
 const Header = styled.div`
   position: sticky;
-  background: rgb(85, 18, 235);
+  /* background: rgb(85, 18, 235);
   background: linear-gradient(
     90deg,
     rgba(85, 18, 235, 1) 0%,
     rgba(0, 205, 191, 1) 39%,
     rgba(168, 235, 18, 1) 77%
-  );
+  ); */
+  background: #0fa;
+  background: linear-gradient(90deg, #7916dd, #0fa);
   border-radius: 0px 0px 25px 0px ;
   z-index: 100;
   top: 0;

@@ -4,10 +4,9 @@ import {
   IconButton,
   Button,
   Tooltip,
-  TextField,
-  InputAdornment,
   Menu,
   MenuItem,
+  ButtonGroup,
 } from "@material-ui/core";
 import ChatIcon from "@material-ui/icons/Chat";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
@@ -26,6 +25,9 @@ function Sidebar() {
 
   //Menubar state.
   const [menuToggle, setMenuToggle] = useState(null);
+
+  //Group visible state.
+  const [group, setGroup] = useState(false);
 
   // Function to check if the reciepent email has an account.
   const hasAnAccount = async (reciepentEmail) => {
@@ -145,35 +147,67 @@ function Sidebar() {
       </Header>
 
       <Search>
-        <SearchBar uEmail={user.email} style={{width: '200px'}}/>
+        <SearchBar uEmail={user.email} style={{ width: "200px" }} />
       </Search>
 
-      <SidebarButton onClick={createChat} variant="outlined">
-        Star a new chat
-      </SidebarButton>
-      <SidebarButton onClick={createGroup} variant="outlined">
-        Star a new group
-      </SidebarButton>
+      <ButtonDiv>
+        <NewChat onClick={createChat} variant="outlined">
+          Star a new chat
+        </NewChat>
+        <NewGroup onClick={createGroup} variant="outlined">
+          Star a new group
+        </NewGroup>
+      </ButtonDiv>
+
+      <ButtonGroup style={{width: '100%', marginTop: '10px'}}>
+        <NewChat onClick={() => setGroup(false)}>People</NewChat>
+        <NewGroup onClick={() => setGroup(true)}>Groups</NewGroup>
+      </ButtonGroup>
 
       {/* This is where list of chats live. */}
-      {chatsSnapshot?.docs.map((chat) => (
-        <Chat
-          key={chat.id}
-          id={chat.id}
-          users={chat.data().users}
-          groupName={""}
-          groupURL={""}
-        />
-      ))}
-      {groupSnapshot?.docs.map((group) => (
-        <Chat
-          key={group.id}
-          id={group.id}
-          users={["", ""]}
-          groupName={group.data().groupName}
-          groupURL={group.data().photoURL}
-        />
-      ))}
+      {group
+        ? groupSnapshot?.docs.map((group, index) =>
+            index % 2 == 0 ? (
+              <Chat
+                key={group.id}
+                id={group.id}
+                users={["", ""]}
+                groupName={group.data().groupName}
+                groupURL={group.data().photoURL}
+                color="#fffcad"
+              />
+            ) : (
+              <Chat
+                key={group.id}
+                id={group.id}
+                users={["", ""]}
+                groupName={group.data().groupName}
+                groupURL={group.data().photoURL}
+                color="#c68cff"
+              />
+            )
+          )
+        : chatsSnapshot?.docs.map((chat, index) =>
+            index % 2 == 0 ? (
+              <Chat
+                key={chat.id}
+                id={chat.id}
+                users={chat.data().users}
+                groupName={""}
+                groupURL={""}
+                color="#c68cff"
+              />
+            ) : (
+              <Chat
+                key={chat.id}
+                id={chat.id}
+                users={chat.data().users}
+                groupName={""}
+                groupURL={""}
+                color="#fffcad"
+              />
+            )
+          )}
     </Container>
   );
 }
@@ -188,27 +222,23 @@ const Container = styled.div`
   min-width: 300px;
   max-width: 350px;
   overflow-y: scroll;
-
   ::-webkit-scrollbar {
     display: none;
   }
-
   -ms-overflow-style: none;
   scrollbar-width: none;
-
   @media (max-width: 540px) {
     display: flex;
     flex-direction: column;
     min-width: 100%;
   }
-
 `;
 
 const Header = styled.div`
   display: flex;
   position: sticky;
   top: 0;
-  background-color: #5512eb;
+  background-color: #7916dd;
   z-index: 1;
   justify-content: space-between;
   align-items: center;
@@ -236,16 +266,39 @@ const Search = styled.div`
   flex-direction: column;
   margin-top: 20px;
   margin-bottom: 20px;
+
+  &&& {
+    border-color: #0fa;
+  }
 `;
 
-const SidebarButton = styled(Button)`
+const ButtonDiv = styled.div`
   width: 100%;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+`;
+
+const NewChat = styled(Button)`
+  width: 80%;
   /* Make sheeit important */
   &&& {
     margin-bottom: 10px;
     :hover {
-      background-color: rgba(253, 231, 76, 0.8);
+      //background-color: rgba(253, 231, 76, 0.8);
+      background: #7affd3;
     }
+  }
+`;
+const NewGroup = styled(Button)`
+  width: 80%;
+  /* Make sheeit important */
+  &&& {
+    margin-bottom: 10px;
+    :hover {
+      //background-color: rgba(253, 231, 76, 0.8);
+      background: #fffcad;
+    }a
   }
 `;
 

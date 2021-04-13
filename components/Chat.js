@@ -6,7 +6,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { useRouter } from "next/router";
 
-function Chat({ id, users, groupName, groupURL }) {
+function Chat({ id, users, groupName, groupURL, color }) {
   const router = useRouter();
 
   const [user] = useAuthState(auth);
@@ -25,11 +25,11 @@ function Chat({ id, users, groupName, groupURL }) {
 
   //Function to let user Enter specific group.
   const enterGroup = () => {
-    router.push(`/group/${id}`)
+    router.push(`/group/${id}`);
   };
 
   return groupName != "" ? (
-    <Container onClick={enterGroup}>
+    <Container onClick={enterGroup} color={color}>
       {groupURL ? (
         <UserAvatar src={groupURL} />
       ) : (
@@ -38,7 +38,7 @@ function Chat({ id, users, groupName, groupURL }) {
       <p>{groupName}</p>
     </Container>
   ) : (
-    <Container onClick={enterChat}>
+    <Container onClick={enterChat} color={color}>
       {reciepent ? (
         <UserAvatar src={reciepent?.photoURL} />
       ) : (
@@ -57,9 +57,8 @@ const Container = styled.div`
   cursor: pointer;
   padding: 15px;
   word-break: break-word;
-
   :hover {
-    background-color: #fffcad;
+    background-color: ${(props) => (props.color ? props.color : "#c68cff")};
   }
 `;
 
