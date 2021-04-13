@@ -145,7 +145,7 @@ function Sidebar() {
       </Header>
 
       <Search>
-        <SearchBar uEmail={user.email} />
+        <SearchBar uEmail={user.email} style={{width: '200px'}}/>
       </Search>
 
       <SidebarButton onClick={createChat} variant="outlined">
@@ -201,13 +201,14 @@ const Container = styled.div`
     flex-direction: column;
     min-width: 100%;
   }
+
 `;
 
 const Header = styled.div`
   display: flex;
   position: sticky;
   top: 0;
-  background: #7261a3;
+  background-color: #5512eb;
   z-index: 1;
   justify-content: space-between;
   align-items: center;
@@ -229,7 +230,12 @@ const IconsContainer = styled.div`
 `;
 
 const Search = styled.div`
-  padding: 20px;
+  width: 100%;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  margin-top: 20px;
+  margin-bottom: 20px;
 `;
 
 const SidebarButton = styled(Button)`

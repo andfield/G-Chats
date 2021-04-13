@@ -68,24 +68,23 @@ function GroupScreen({ group, messages }) {
   //Function to Show all the messages.
   const showMessages = () => {
     //If Client is faster
-    if(messagesSnapshot) {
-        return messagesSnapshot.docs.map( message => (
-            <Message
-                key={message.id}
-                user={message.data().user}
-                message={{
-                    ...message.data(),
-                    timestamp: message.data().timestamp?.toDate().getTime(),
-                }}
-            />
-        ))
-    }s
+    if (messagesSnapshot) {
+      return messagesSnapshot.docs.map((message) => (
+        <Message
+          key={message.id}
+          user={message.data().user}
+          message={{
+            ...message.data(),
+            timestamp: message.data().timestamp?.toDate().getTime(),
+          }}
+        />
+      ));
+    }
 
     //If SSR is faster.
-    return JSON.parse(messages).map(message) => (
-        <
-    )
-
+    return JSON.parse(messages).map((message) => (
+      <Message key={message.id} user={message.user} message={message} />
+    ));
   };
 
   //Function to Toggle Emojis.
@@ -170,7 +169,7 @@ function GroupScreen({ group, messages }) {
             })}
           </Menu>
           <IconButton>
-            <AttachFile />
+            <AttachFile style={{color: 'white'}}/>
           </IconButton>
           <IconButton>
             <MoreVert />
@@ -188,7 +187,7 @@ function GroupScreen({ group, messages }) {
           <button hidden disabled={!input} type="submit" onClick={sendMessage}>
             Send Message
           </button>
-          <ArrowForwardIos onClick={sendMessage} />
+          <ArrowForwardIos onClick={sendMessage}/>
         </MainInput>
         <Picker
           style={{ width: "100%", display: emojiDisplay, marginTop: "20px" }}
@@ -206,7 +205,14 @@ const Container = styled.div`
 `;
 const Header = styled.div`
   position: sticky;
-  background-color: white;
+  background: rgb(85, 18, 235);
+  background: linear-gradient(
+    90deg,
+    rgba(85, 18, 235, 1) 0%,
+    rgba(0, 205, 191, 1) 39%,
+    rgba(168, 235, 18, 1) 77%
+  );
+  border-radius: 0px 0px 25px 0px;
   z-index: 100;
   top: 0;
   display: flex;

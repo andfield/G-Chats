@@ -41,11 +41,11 @@ function SearchBar({ uEmail }) {
         .collection("chats")
         .where("users", "array-contains", email)
         .get();
-      chat.docs.map( doc => {
-        if(doc.data().users.includes(uEmail)){
-            router.push(`/chat/${doc.id}`);
+      chat.docs.map((doc) => {
+        if (doc.data().users.includes(uEmail)) {
+          router.push(`/chat/${doc.id}`);
         }
-      })
+      });
     } else {
       alert("Can't chat with yourself G");
     }
@@ -53,9 +53,19 @@ function SearchBar({ uEmail }) {
 
   return (
     <>
-      <AsyncSelect loadOptions={loadOptions} onChange={openChat} placeholder="Search for your G..." />
+      <Select
+        loadOptions={loadOptions}
+        onChange={openChat}
+        placeholder="Search"
+      />
     </>
   );
 }
 
 export default SearchBar;
+
+const Select = styled(AsyncSelect)`
+  &&& {
+    width: 90%;
+  }
+`;

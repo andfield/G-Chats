@@ -19,13 +19,14 @@ import TimeAgo from "timeago-react";
 import firebase from "firebase";
 import "emoji-mart/css/emoji-mart.css";
 import { Picker } from "emoji-mart";
+import Sidebar from "./Sidebar";
 
 function ChatScreen({ chat, messages }) {
   //States
   const [input, setInput] = useState("");
   const [user] = useAuthState(auth);
   const [emojiDisplay, setEmojiDisplay] = useState("none");
-  
+
   const reciepentEmail = getReciepentEmail(chat.users, user);
   const endOfMessageRef = useRef(null);
 
@@ -119,10 +120,13 @@ function ChatScreen({ chat, messages }) {
     <Container>
       <Header>
         <Hidden mdUp>
-          <ArrowBackIos onClick={() => router.push('/')} style={{ marginRight: "5px" }} />
+          <ArrowBackIos
+            onClick={() => router.push("/")}
+            style={{ marginRight: "5px" }}
+          />
         </Hidden>
         {reciepent ? (
-          <Avatar src={reciepent?.photoURL} />
+          <Avatar src={reciepent?.photoURL} si />
         ) : (
           <Avatar>{reciepentEmail[0]}</Avatar>
         )}
@@ -146,7 +150,7 @@ function ChatScreen({ chat, messages }) {
             <AttachFileIcon />
           </IconButton>
           <IconButton>
-            <MoreVertIcon />
+            <MoreVertIcon style={{ color: "white" }} />
           </IconButton>
         </HeaderIcons>
       </Header>
@@ -181,7 +185,14 @@ const Container = styled.div`
 
 const Header = styled.div`
   position: sticky;
-  background-color: white;
+  background: rgb(85, 18, 235);
+  background: linear-gradient(
+    90deg,
+    rgba(85, 18, 235, 1) 0%,
+    rgba(0, 205, 191, 1) 39%,
+    rgba(168, 235, 18, 1) 77%
+  );
+  border-radius: 0px 0px 25px 0px ;
   z-index: 100;
   top: 0;
   display: flex;
@@ -196,21 +207,35 @@ const HeaderInfo = styled.div`
   flex: 1;
 
   > h3 {
-    margin-bottom: 3px;
+    font-size: 1.5em;
+    color: white;
+    font-weight: bold;
+    text-shadow: 0px 1px 7px rgba(0, 0, 0, 0.75);
+    letter-spacing: 0.1em;
+    word-spacing: 0.2em;
   }
 
   > p {
     font-size: 14px;
-    color: grey;
+    font-weight: lighter;
+    margin-top: -1.5em;
+    margin-bottom: 2em;
+    letter-spacing: 0.1em;
+    text-shadow: 0px 1px 7px rgba(0, 0, 0, 0.75);
+    color: white;
   }
   @media (max-width: 1024px) {
     > p {
       margin-top: 0px;
     }
   }
-  @media(max-width: 540px) {
-    >p {
-      font-size: 0.8em
+  @media (max-width: 540px) {
+    > p {
+      font-size: 0.6em;
+      margin-top: -10px;
+    }
+    > h3 {
+      font-size: 1em;
     }
   }
 `;
@@ -219,7 +244,7 @@ const HeaderIcons = styled.div``;
 
 const MessageContainer = styled.div`
   padding: 30px;
-  background-color: #edd6ff;
+  background: white;
   min-height: 90vh;
 `;
 

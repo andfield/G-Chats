@@ -15,7 +15,6 @@ function HomePage() {
         <title>Sup! {user?.displayName}</title>
       </Head>
       <Sidebar />
-      <Hidden smDown>
       <ChatContainer>
         <HomeScreenContainer>
           <RoundedImg src="Gif.gif" alt="logo" />
@@ -24,7 +23,6 @@ function HomePage() {
         </HomeScreenContainer>
         {/* <ChatScreen chat={null} messages={null}/> */}
       </ChatContainer>
-      </Hidden>
     </MainContainer>
   );
 }
@@ -47,6 +45,10 @@ const ChatContainer = styled.div`
   /* For Firefox */
   scrollbar-width: none;
 
+
+  @media (max-width: 540px){
+    display: none;
+  }
   
 `;
 
@@ -69,6 +71,13 @@ const HomeScreenContainer = styled.div`
     font-size: 1.5em;
     text-align: center;
   }
+
+  @media (max-width: 956px){
+    >h1{
+      align-self: center;
+      font-size: 2em;
+    }
+  }
 `;
 
 const RoundedImg = styled.img`
@@ -80,3 +89,4 @@ const RoundedImg = styled.img`
     margin-top: -4em;
   }
 `;
+
