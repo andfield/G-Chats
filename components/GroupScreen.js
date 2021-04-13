@@ -79,12 +79,13 @@ function GroupScreen({ group, messages }) {
                 }}
             />
         ))
-    }
+    }s
 
     //If SSR is faster.
-    return JSON.parse(messages).map( message => (
-        <Message key={message.id} user={message.user} message={message} />
-    ))
+    return JSON.parse(messages).map(message) => (
+        <
+    )
+
   };
 
   //Function to Toggle Emojis.
@@ -97,7 +98,7 @@ function GroupScreen({ group, messages }) {
   };
 
   //Function to select Emojis.
-  const selectEmoji = (e) => {
+  const selectEmoji = () => {
     let sym = e.unified.split("-");
     let codeArray = [];
     codeArray.push("0x" + sym[0]);
