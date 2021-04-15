@@ -20,12 +20,14 @@ import firebase from "firebase";
 import "emoji-mart/css/emoji-mart.css";
 import { Picker } from "emoji-mart";
 import Sidebar from "./Sidebar";
+import Fade from "react-reveal/Fade";
 
 function ChatScreen({ chat, messages }) {
   //States
   const [input, setInput] = useState("");
   const [user] = useAuthState(auth);
   const [emojiDisplay, setEmojiDisplay] = useState("none");
+  const [fadeDisplay, setFadeDisplay] = useState("none");
 
   const reciepentEmail = getReciepentEmail(chat.users, user);
   const endOfMessageRef = useRef(null);
@@ -101,8 +103,10 @@ function ChatScreen({ chat, messages }) {
   //Function to Toggle Emojis.
   const emojiFunction = () => {
     if (emojiDisplay == "none") {
+      setFadeDisplay(true);
       setEmojiDisplay("");
     } else {
+      setFadeDisplay(false);
       setEmojiDisplay("none");
     }
   };
@@ -162,17 +166,19 @@ function ChatScreen({ chat, messages }) {
 
       <InputContainer>
         <MainInput>
-          <InsertEmoticon onClick={emojiFunction} />
+          <Emoticon onClick={emojiFunction} />
           <Input value={input} onChange={(e) => setInput(e.target.value)} />
           <button hidden disabled={!input} type="submit" onClick={sendMessage}>
             Send message
           </button>
-          <ArrowForwardIos onClick={sendMessage} />
+          <Arrow onClick={sendMessage} />
         </MainInput>
-        <Picker
-          style={{ width: "100%", display: emojiDisplay, marginTop: "20px" }}
-          onSelect={selectEmoji}
-        />
+        <Fade bottom when={fadeDisplay}>
+          <Picker
+            style={{ width: "100%", marginTop: "20px", display: emojiDisplay, backgroundColor: 'whitesmoke'}}
+            onSelect={selectEmoji}
+          />
+        </Fade>
       </InputContainer>
     </Container>
   );
@@ -185,16 +191,9 @@ const Container = styled.div`
 
 const Header = styled.div`
   position: sticky;
-  /* background: rgb(85, 18, 235);
-  background: linear-gradient(
-    90deg,
-    rgba(85, 18, 235, 1) 0%,
-    rgba(0, 205, 191, 1) 39%,
-    rgba(168, 235, 18, 1) 77%
-  ); */
   background: #0fa;
   background: linear-gradient(90deg, #7916dd, #0fa);
-  border-radius: 0px 0px 25px 0px ;
+  border-radius: 0px 0px 25px 0px;
   z-index: 100;
   top: 0;
   display: flex;
@@ -281,4 +280,23 @@ const MainInput = styled.div`
   display: flex;
   width: 100%;
   align-items: center;
+`;
+
+const Emoticon = styled(InsertEmoticon)`
+  &&& {
+    transition: transform 0.2s;
+  }
+  :hover {
+    transform: scale(1.5);
+  }
+`;
+
+const Arrow = styled(ArrowForwardIos)`
+  &&& {
+    transition: transform 0.2s;
+  }
+  :hover {
+    transform: scale(1.5);
+    color: lightGreen;
+  }
 `;

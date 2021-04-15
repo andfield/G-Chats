@@ -7,6 +7,7 @@ import {
   Menu,
   MenuItem,
   ButtonGroup,
+  Divider,
 } from "@material-ui/core";
 import ChatIcon from "@material-ui/icons/Chat";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
@@ -18,6 +19,7 @@ import { useCollection } from "react-firebase-hooks/firestore";
 import Chat from "../components/Chat";
 import { useState } from "react";
 import SearchBar from "./Search";
+import Fade from "react-reveal/Fade";
 
 function Sidebar() {
   //Get user from use auth state.
@@ -25,6 +27,7 @@ function Sidebar() {
 
   //Menubar state.
   const [menuToggle, setMenuToggle] = useState(null);
+  const [name, setName] = useState("none");
 
   //Group visible state.
   const [group, setGroup] = useState(false);
@@ -121,10 +124,17 @@ function Sidebar() {
   return (
     <Container>
       <Header>
-        <Tooltip title="Logout">
-          <UserAvatar onClick={() => auth.signOut()} src={user.photoURL} />
-        </Tooltip>
-        <UName>{user.displayName}</UName>
+        <UserAvatar
+          src={user.photoURL}
+          onMouseEnter={() => setName("inline")}
+          onMouseLeave={() => setName("none")}
+          style={{zIndex: '2'}}
+        />
+
+        <Fade left when={name == "inline"}>
+          <UName style={{ display: name }}>{user.displayName}</UName>
+        </Fade>
+
         <IconsContainer>
           <IconBtn onClick={createChat}>
             <ChatIcon />
@@ -159,7 +169,7 @@ function Sidebar() {
         </NewGroup>
       </ButtonDiv>
 
-      <ButtonGroup style={{width: '100%', marginTop: '10px'}}>
+      <ButtonGroup style={{ width: "100%", marginTop: "10px" }}>
         <NewChat onClick={() => setGroup(false)}>People</NewChat>
         <NewGroup onClick={() => setGroup(true)}>Groups</NewGroup>
       </ButtonGroup>
@@ -168,44 +178,56 @@ function Sidebar() {
       {group
         ? groupSnapshot?.docs.map((group, index) =>
             index % 2 == 0 ? (
-              <Chat
-                key={group.id}
-                id={group.id}
-                users={["", ""]}
-                groupName={group.data().groupName}
-                groupURL={group.data().photoURL}
-                color="#fffcad"
-              />
+              <>
+                <Chat
+                  key={group.id}
+                  id={group.id}
+                  users={["", ""]}
+                  groupName={group.data().groupName}
+                  groupURL={group.data().photoURL}
+                  color="#fffcad"
+                />
+                <Divider />
+              </>
             ) : (
-              <Chat
-                key={group.id}
-                id={group.id}
-                users={["", ""]}
-                groupName={group.data().groupName}
-                groupURL={group.data().photoURL}
-                color="#c68cff"
-              />
+              <>
+                <Chat
+                  key={group.id}
+                  id={group.id}
+                  users={["", ""]}
+                  groupName={group.data().groupName}
+                  groupURL={group.data().photoURL}
+                  color="#dab5ff"
+                />
+                <Divider />
+              </>
             )
           )
         : chatsSnapshot?.docs.map((chat, index) =>
             index % 2 == 0 ? (
-              <Chat
-                key={chat.id}
-                id={chat.id}
-                users={chat.data().users}
-                groupName={""}
-                groupURL={""}
-                color="#c68cff"
-              />
+              <>
+                <Chat
+                  key={chat.id}
+                  id={chat.id}
+                  users={chat.data().users}
+                  groupName={""}
+                  groupURL={""}
+                  color="#dab5ff"
+                />
+                <Divider />
+              </>
             ) : (
-              <Chat
-                key={chat.id}
-                id={chat.id}
-                users={chat.data().users}
-                groupName={""}
-                groupURL={""}
-                color="#fffcad"
-              />
+              <>
+                <Chat
+                  key={chat.id}
+                  id={chat.id}
+                  users={chat.data().users}
+                  groupName={""}
+                  groupURL={""}
+                  color="#fffcad"
+                />
+                <Divider />
+              </>
             )
           )}
     </Container>
@@ -298,7 +320,7 @@ const NewGroup = styled(Button)`
     :hover {
       //background-color: rgba(253, 231, 76, 0.8);
       background: #fffcad;
-    }a
+    }
   }
 `;
 
@@ -306,6 +328,7 @@ const UName = styled.h1`
   font-size: 1.2em;
   color: white;
   margin-left: -30px;
+  z-index: -2;
 `;
 
 const IconBtn = styled(IconButton)`

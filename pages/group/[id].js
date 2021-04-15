@@ -64,24 +64,12 @@ export async function getServerSideProps(context){
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
 //Styled Components
 const Container = styled.div`
   display: flex;
 `;
 
-const ChatContainer = styled.div`
+const ChatContainer=styled.div`
   flex: 1;
   overflow: scroll;
   height: 100vh;
@@ -95,4 +83,4 @@ const ChatContainer = styled.div`
 
   /* For Firefox */
   scrollbar-width: none;
-`;
+`

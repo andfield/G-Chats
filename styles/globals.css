@@ -14,3 +14,12 @@ a {
 * {
   box-sizing: border-box;
 }
+
+
+.emoji{
+  transition: transform .5s
+}
+
+.emoji:hover{
+  transform: scale(1.5);
+}

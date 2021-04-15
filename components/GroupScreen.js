@@ -169,7 +169,7 @@ function GroupScreen({ group, messages }) {
             })}
           </Menu>
           <IconButton>
-            <AttachFile style={{color: 'white'}}/>
+            <AttachFile style={{ color: "white" }} />
           </IconButton>
           <IconButton>
             <MoreVert />
@@ -182,12 +182,12 @@ function GroupScreen({ group, messages }) {
       </MessageContainer>
       <InputContainer>
         <MainInput>
-          <InsertEmoticon onClick={emojiFunction} />
+          <Emoticon onClick={emojiFunction} />
           <Input value={input} onChange={(e) => setInput(e.target.value)} />
           <button hidden disabled={!input} type="submit" onClick={sendMessage}>
             Send Message
           </button>
-          <ArrowForwardIos onClick={sendMessage}/>
+          <ArrowForwardIos onClick={sendMessage} />
         </MainInput>
         <Picker
           style={{ width: "100%", display: emojiDisplay, marginTop: "20px" }}
@@ -205,14 +205,9 @@ const Container = styled.div`
 `;
 const Header = styled.div`
   position: sticky;
-  background: rgb(85, 18, 235);
-  background: linear-gradient(
-    90deg,
-    rgba(85, 18, 235, 1) 0%,
-    rgba(0, 205, 191, 1) 39%,
-    rgba(168, 235, 18, 1) 77%
-  );
-  border-radius: 0px 0px 25px 0px;
+  background: #0fa;
+  background: linear-gradient(90deg, #7916dd, #0fa);
+  border-radius: 0px 0px 25px 0px ;
   z-index: 100;
   top: 0;
   display: flex;
@@ -223,16 +218,26 @@ const Header = styled.div`
 `;
 
 const HeaderInfo = styled.div`
-  margin-left: 15px;
+ margin-left: 15px;
   flex: 1;
 
   > h3 {
-    margin-bottom: 3px;
+    font-size: 1.5em;
+    color: white;
+    font-weight: bold;
+    text-shadow: 0px 1px 7px rgba(0, 0, 0, 0.75);
+    letter-spacing: 0.1em;
+    word-spacing: 0.2em;
   }
 
   > p {
     font-size: 14px;
-    color: grey;
+    font-weight: lighter;
+    margin-top: -1.5em;
+    margin-bottom: 2em;
+    letter-spacing: 0.1em;
+    text-shadow: 0px 1px 7px rgba(0, 0, 0, 0.75);
+    color: white;
   }
   @media (max-width: 1024px) {
     > p {
@@ -241,7 +246,11 @@ const HeaderInfo = styled.div`
   }
   @media (max-width: 540px) {
     > p {
-      font-size: 0.8em;
+      font-size: 0.6em;
+      margin-top: -10px;
+    }
+    > h3 {
+      font-size: 1em;
     }
   }
 `;
@@ -250,7 +259,6 @@ const HeaderIcons = styled.div``;
 
 const MessageContainer = styled.div`
   padding: 30px;
-  background-color: #edd6ff;
   min-height: 90vh;
 `;
 
@@ -292,4 +300,15 @@ const ViewUsers = styled(Button)`
     border-radius: 50px;
     font-size: 0.5em;
   }
+`;
+
+const Emoticon = styled(InsertEmoticon)`
+  
+  &&&{
+    transition: transform .2s;
+  }
+  :hover {
+    transform: scale(1.5);
+  }
+ 
 `;
