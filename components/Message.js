@@ -5,8 +5,8 @@ import moment from "moment";
 import { Avatar, Badge } from "@material-ui/core";
 import { useState, useEffect } from "react";
 // Import the circular menu
-import { CircleMenu, CircleMenuItem } from "react-circular-menu";
-import "react-circular-menu/styles.css";
+// import { CircleMenu, CircleMenuItem } from "react-circular-menu";
+// import "react-circular-menu/styles.css";
 
 //Test Icons
 import MailIcon from "@material-ui/icons/Mail";

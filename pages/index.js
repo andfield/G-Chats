@@ -1,5 +1,4 @@
 import Head from "next/head";
-import Sidebar from "../components/Sidebar";
 import HomePage from "../pages/Home";
 
 export default function Home() {
