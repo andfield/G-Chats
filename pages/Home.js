@@ -4,22 +4,32 @@ import Sidebar from "../components/Sidebar";
 import ChatScreen from "../components/ChatScreen";
 import { auth, db } from "../firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { Container, Hidden } from '@material-ui/core'
- 
+import { Button, Container, Hidden } from "@material-ui/core";
+import { DrawerContext } from "../Context/DrawerContext";
+import { useContext } from "react";
+
 function HomePage() {
   const [user] = useAuthState(auth);
+
+  //Get Drawer Context.
+  const { drawerStatus, changeStatus } = useContext(DrawerContext);
 
   return (
     <MainContainer>
       <Head>
         <title>Sup! {user?.displayName}</title>
       </Head>
-      <Sidebar />
+      {drawerStatus == true ? <Sidebar /> : null}
       <ChatContainer>
         <HomeScreenContainer>
           <RoundedImg src="Gif.gif" alt="logo" />
-          <h1>Welcome to G-Chats</h1>
-          <p>Select a pre existing chat or create new chat to start talking with your G's.</p>
+          <h1>Welcome to G-Chats
+            {console.log(drawerStatus)}
+          </h1>
+          <p>
+            Select a pre existing chat or create new chat to start talking with
+            your G's.
+          </p>
         </HomeScreenContainer>
         {/* <ChatScreen chat={null} messages={null}/> */}
       </ChatContainer>
@@ -45,11 +55,9 @@ const ChatContainer = styled.div`
   /* For Firefox */
   scrollbar-width: none;
 
-
-  @media (max-width: 540px){
+  @media (max-width: 540px) {
     display: none;
   }
-  
 `;
 
 const HomeScreenContainer = styled.div`
@@ -59,21 +67,21 @@ const HomeScreenContainer = styled.div`
   background-color: whitesmoke;
   min-height: 100vh;
 
-  >h1{
+  > h1 {
     align-self: center;
     margin-top: -100px;
     font-size: 2.9em;
   }
 
-  >p{
+  > p {
     align-self: center;
     margin-top: 5px;
     font-size: 1.5em;
     text-align: center;
   }
 
-  @media (max-width: 956px){
-    >h1{
+  @media (max-width: 956px) {
+    > h1 {
       align-self: center;
       font-size: 2em;
     }
@@ -85,8 +93,7 @@ const RoundedImg = styled.img`
   align-self: center;
   margin-top: -6em;
 
-  @media (max-width: 1024px){
+  @media (max-width: 1024px) {
     margin-top: -4em;
   }
 `;
-
