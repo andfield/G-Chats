@@ -17,13 +17,17 @@ import * as EmailValidator from "email-validator";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useCollection } from "react-firebase-hooks/firestore";
 import Chat from "../components/Chat";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import SearchBar from "./Search";
 import Fade from "react-reveal/Fade";
+import {DrawerContext} from '../Context/DrawerContext';
 
 function Sidebar() {
   //Get user from use auth state.
   const [user] = useAuthState(auth);
+
+  //Get the display status from drawer context.
+  const {drawerStatus} = useContext(DrawerContext)
 
   //Menubar state.
   const [menuToggle, setMenuToggle] = useState(null);
@@ -122,7 +126,7 @@ function Sidebar() {
   };
 
   return (
-    <Container>
+    <Container display={drawerStatus}>
       <Header>
         <UserAvatar
           src={user.photoURL}
@@ -238,6 +242,7 @@ export default Sidebar;
 
 //styled components
 const Container = styled.div`
+  display: ${(props) => props.display ? "" : "none"};
   flex: 1;
   border-right: 1px solid whitesmoke;
   height: 100vh;
@@ -249,12 +254,14 @@ const Container = styled.div`
   }
   -ms-overflow-style: none;
   scrollbar-width: none;
+  
   @media (max-width: 540px) {
     display: flex;
     flex-direction: column;
     min-width: 100%;
   }
 `;
+
 
 const Header = styled.div`
   display: flex;

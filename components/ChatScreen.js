@@ -21,6 +21,8 @@ import "emoji-mart/css/emoji-mart.css";
 import { Picker } from "emoji-mart";
 import Sidebar from "./Sidebar";
 import Fade from "react-reveal/Fade";
+import { useContext } from "react";
+import { DrawerContext } from "../Context/DrawerContext";
 
 function ChatScreen({ chat, messages }) {
   //States
@@ -28,6 +30,9 @@ function ChatScreen({ chat, messages }) {
   const [user] = useAuthState(auth);
   const [emojiDisplay, setEmojiDisplay] = useState("none");
   const [fadeDisplay, setFadeDisplay] = useState("none");
+
+  //ContextProvider
+  const { changeStatus, drawerStatus } = useContext(DrawerContext);
 
   const reciepentEmail = getReciepentEmail(chat.users, user);
   const endOfMessageRef = useRef(null);
@@ -123,12 +128,10 @@ function ChatScreen({ chat, messages }) {
   return (
     <Container>
       <Header>
-        <Hidden mdUp>
-          <ArrowBackIos
-            onClick={() => router.push("/")}
-            style={{ marginRight: "5px" }}
-          />
-        </Hidden>
+        <ArrowBackIos
+          onClick={() => changeStatus( !drawerStatus )}
+          style={{ marginRight: "5px" }}
+        />
         {reciepent ? (
           <Avatar src={reciepent?.photoURL} />
         ) : (
@@ -175,7 +178,12 @@ function ChatScreen({ chat, messages }) {
         </MainInput>
         <Fade bottom when={fadeDisplay}>
           <Picker
-            style={{ width: "100%", marginTop: "20px", display: emojiDisplay, backgroundColor: 'whitesmoke'}}
+            style={{
+              width: "100%",
+              marginTop: "20px",
+              display: emojiDisplay,
+              backgroundColor: "whitesmoke",
+            }}
             onSelect={selectEmoji}
           />
         </Fade>
