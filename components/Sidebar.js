@@ -3,7 +3,7 @@ import {
   Avatar,
   IconButton,
   Button,
-  Tooltip,
+  Hidden,
   Menu,
   MenuItem,
   ButtonGroup,
@@ -11,6 +11,7 @@ import {
 } from "@material-ui/core";
 import ChatIcon from "@material-ui/icons/Chat";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
+import ArrowBackIos from "@material-ui/icons/ArrowBack";
 import SearchIcon from "@material-ui/icons/Search";
 import { auth, db } from "../firebase";
 import * as EmailValidator from "email-validator";
@@ -20,14 +21,14 @@ import Chat from "../components/Chat";
 import { useState, useContext } from "react";
 import SearchBar from "./Search";
 import Fade from "react-reveal/Fade";
-import {DrawerContext} from '../Context/DrawerContext';
+import { DrawerContext } from "../Context/DrawerContext";
 
 function Sidebar() {
   //Get user from use auth state.
   const [user] = useAuthState(auth);
 
   //Get the display status from drawer context.
-  const {drawerStatus} = useContext(DrawerContext)
+  const { drawerStatus, changeStatus } = useContext(DrawerContext);
 
   //Menubar state.
   const [menuToggle, setMenuToggle] = useState(null);
@@ -132,7 +133,7 @@ function Sidebar() {
           src={user.photoURL}
           onMouseEnter={() => setName("inline")}
           onMouseLeave={() => setName("none")}
-          style={{zIndex: '2'}}
+          style={{ zIndex: "2" }}
         />
 
         <Fade left when={name == "inline"}>
@@ -157,6 +158,9 @@ function Sidebar() {
             <MenuItem onClick={() => auth.signOut()}>Logout</MenuItem>
             <MenuItem>T&C</MenuItem>
           </Menu>
+          <BackBtn onClick={() => changeStatus(!drawerStatus)}>
+            <ArrowBackIos />
+          </BackBtn>
         </IconsContainer>
       </Header>
 
@@ -242,7 +246,7 @@ export default Sidebar;
 
 //styled components
 const Container = styled.div`
-  display: ${(props) => props.display ? "" : "none"};
+  display: ${(props) => (props.display ? "" : "none")};
   flex: 1;
   border-right: 1px solid whitesmoke;
   height: 100vh;
@@ -254,14 +258,12 @@ const Container = styled.div`
   }
   -ms-overflow-style: none;
   scrollbar-width: none;
-  
-  @media (max-width: 540px) {
-    display: flex;
+
+  @media (max-width: 768px) {
     flex-direction: column;
     min-width: 100%;
   }
 `;
-
 
 const Header = styled.div`
   display: flex;
@@ -342,5 +344,16 @@ const IconBtn = styled(IconButton)`
   &&& {
     color: white;
     padding: 6px;
+  }
+`;
+
+const BackBtn = styled(IconButton)`
+  &&& {
+    color: white;
+    padding: 6px;
+
+    @media (min-width: 768px) {
+      display: none;
+    }
   }
 `;

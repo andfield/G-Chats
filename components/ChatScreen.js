@@ -10,7 +10,8 @@ import {
   InsertEmoticon,
   MicOutlined,
   ArrowForwardIos,
-  ArrowBackIos,
+  ArrowBack,
+  ArrowForward,
 } from "@material-ui/icons";
 import getReciepentEmail from "../utils/getReciepentEmail";
 import Message from "../components/Message";
@@ -128,10 +129,18 @@ function ChatScreen({ chat, messages }) {
   return (
     <Container>
       <Header>
-        <ArrowBackIos
-          onClick={() => changeStatus( !drawerStatus )}
-          style={{ marginRight: "5px" }}
-        />
+        {drawerStatus ? (
+          <ArrowBack
+            onClick={() => changeStatus(!drawerStatus)}
+            style={{ marginRight: "5px", color: "white" }}
+          />
+        ) : (
+          <ArrowForward
+            onClick={() => changeStatus(!drawerStatus)}
+            style={{ marginRight: "5px", color: "white" }}
+          />
+        )}
+
         {reciepent ? (
           <Avatar src={reciepent?.photoURL} />
         ) : (
@@ -238,7 +247,7 @@ const HeaderInfo = styled.div`
       margin-top: 0px;
     }
   }
-  @media (max-width: 540px) {
+  @media (max-width: 800px) {
     > p {
       font-size: 0.6em;
       margin-top: -10px;
