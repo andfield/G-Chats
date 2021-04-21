@@ -64,6 +64,7 @@ function ChatScreen({ chat, messages }) {
           message={{
             ...message.data(),
             timestamp: message.data().timestamp?.toDate().getTime(),
+            id: message.id
           }}
         />
       ));

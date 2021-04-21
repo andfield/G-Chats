@@ -4,6 +4,7 @@ import { auth, db } from "../firebase";
 import moment from "moment";
 import { Avatar, Badge } from "@material-ui/core";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 
 //Test Icons
 import MailIcon from "@material-ui/icons/Mail";
@@ -13,6 +14,8 @@ import MapIcon from "@material-ui/icons/Map";
 function Message({ user, message }) {
   const [userLoggedIn] = useAuthState(auth);
   const [messageUser, setMessageUser] = useState();
+  const [deleteIconTrigger, setDeleteIconTrigger] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     db.collection("users")
@@ -22,6 +25,12 @@ function Message({ user, message }) {
         setMessageUser(snapshot.docs[0].data().photoURL);
       });
   }, [user]);
+
+  //Delete current message
+  const deleteChat = () => {
+      db.collection('chats').doc(router.query.id).collection('messages').doc(message.id).delete();
+  }
+
 
   //Determine who is sender or reciever.
   const TypeOfMessage = user === userLoggedIn.email ? Sender : Reciever;
@@ -50,9 +59,17 @@ function Message({ user, message }) {
                 : "..."}
             </TimeStamp>
           </TypeOfMessage>
-          
-          <Icon src={messageUser}/>
 
+          {deleteIconTrigger ? (
+            <Icon
+              src={
+                "https://cdn.iconscout.com/icon/premium/png-512-thumb/delete-1432400-1211078.png"
+              }
+              onClick={() => deleteChat()}
+            />
+          ) : (
+            <Icon src={messageUser} onClick={() =>setDeleteIconTrigger(!deleteIconTrigger)}/>
+          )}
         </>
       )}
     </Container>
