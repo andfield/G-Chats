@@ -147,7 +147,7 @@ function GroupScreen({ group, messages }) {
         {group.photoURL ? (
           <Avatar src={group.photoURL} />
         ) : (
-          <Avatar>{group.groupName[0]}</Avatar>
+          <Avatar>{group.groupName?.[0]}</Avatar>
         )}
         <HeaderInfo>
           <h3>{group?.groupName}</h3>

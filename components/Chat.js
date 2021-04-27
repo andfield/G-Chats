@@ -33,7 +33,7 @@ function Chat({ id, users, groupName, groupURL, color }) {
       {groupURL ? (
         <UserAvatar src={groupURL} />
       ) : (
-        <UserAvatar>{groupName[0]}</UserAvatar>
+        <UserAvatar>{groupName?.[0]}</UserAvatar>
       )}
       <p>{groupName}</p>
     </Container>
