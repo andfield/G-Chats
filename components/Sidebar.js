@@ -22,6 +22,7 @@ import { useState, useContext } from "react";
 import SearchBar from "./Search";
 import Fade from "react-reveal/Fade";
 import { DrawerContext } from "../Context/DrawerContext";
+import {Router} from 'next/router'
 
 function Sidebar() {
   //Get user from use auth state.
@@ -131,6 +132,7 @@ function Sidebar() {
       <Header>
         <UserAvatar
           src={user.photoURL}
+          onClick={() => Router.push('/')}
           onMouseEnter={() => setName("inline")}
           onMouseLeave={() => setName("none")}
           style={{ zIndex: "2" }}

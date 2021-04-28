@@ -3,55 +3,67 @@ import {
   Hidden,
   Menu,
   MenuItem,
-  IconButton,
   Button,
-} from "@material-ui/core";
+  Divider,
+  IconButton,
+  Dialog,
+  DialogTitle
+
+} from "@material-ui/core"
 import {
+  AddCircle,
   ArrowBackIos,
   ArrowForwardIos,
   InsertEmoticon,
-} from "@material-ui/icons";
-import styled from "styled-components";
-import { db, auth } from "../firebase";
-import firebase from "firebase";
-import { useCollection } from "react-firebase-hooks/firestore";
-import { useRouter } from "next/router";
-import { useState, useEffect, useRef } from "react";
-import { AttachFile, MoreVert, Group } from "@material-ui/icons";
-import { Picker } from "emoji-mart";
-import { useAuthState } from "react-firebase-hooks/auth";
-import "emoji-mart/css/emoji-mart.css";
-import Message from "./Message";
+} from "@material-ui/icons"
+import styled from "styled-components"
+import {db, auth} from "../firebase"
+import firebase from "firebase"
+import {useCollection} from "react-firebase-hooks/firestore"
+import {useRouter} from "next/router"
+import {useState, useEffect, useRef} from "react"
+import {AttachFile, MoreVert, Group} from "@material-ui/icons"
+import {Picker} from "emoji-mart"
+import {useAuthState} from "react-firebase-hooks/auth"
+import "emoji-mart/css/emoji-mart.css"
+import Message from "./Message"
+import useMediaQuery from "@material-ui/core/useMediaQuery"
+import {useTheme} from "@material-ui/core/styles"
 
-function GroupScreen({ group, messages }) {
+function GroupScreen({group, messages}) {
   //Assign router.
-  const router = useRouter();
+  const router=useRouter()
 
   //Current user.
-  const [user] = useAuthState(auth);
+  const [user]=useAuthState(auth)
 
   //Refs
-  const endOfMessageRef = useRef(null);
+  const endOfMessageRef=useRef(null)
+  
+  //For dialogs
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   //States
-  const [userNames, setUserNames] = useState([]);
-  const [userEmails, setUserEmails] = useState(group.users);
-  const [input, setInput] = useState("");
-  const [menuToggle, setMenuToggle] = useState(null);
-  const [emojiDisplay, setEmojiDisplay] = useState("none");
+  const [userNames, setUserNames]=useState([])
+  const [userEmails, setUserEmails]=useState(group.users)
+  const [input, setInput]=useState("")
+  const [menuToggle, setMenuToggle]=useState(null)
+  const [emojiDisplay, setEmojiDisplay]=useState("none")
+  const [addButton, setAddButton]=useState(false)
 
   //Fetch all the messages for the group.
-  const [messagesSnapshot] = useCollection(
+  const [messagesSnapshot]=useCollection(
     db
       .collection("groups")
       .doc(router.query.id)
       .collection("messages")
       .orderBy("timestamp", "asc")
-  );
+  )
 
   //useEffect to get names of all the users.
   useEffect(async () => {
-    const users = [];
+    const users=[]
 
     for (const email of userEmails) {
       await db
@@ -59,14 +71,14 @@ function GroupScreen({ group, messages }) {
         .where("email", "==", email)
         .get()
         .then((snapshot) => {
-          users.push(snapshot.docs[0].data().name);
-        });
+          users.push(snapshot.docs[0].data().name)
+        })
     }
-    setUserNames(users);
-  }, []);
+    setUserNames(users)
+  }, [])
 
   //Function to Show all the messages.
-  const showMessages = () => {
+  const showMessages=() => {
     //If Client is faster
     if (messagesSnapshot) {
       return messagesSnapshot.docs.map((message) => (
@@ -78,62 +90,62 @@ function GroupScreen({ group, messages }) {
             timestamp: message.data().timestamp?.toDate().getTime(),
           }}
         />
-      ));
+      ))
     }
 
     //If SSR is faster.
     return JSON.parse(messages).map((message) => (
       <Message key={message.id} user={message.user} message={message} />
-    ));
-  };
+    ))
+  }
 
   //Function to Toggle Emojis.
-  const emojiFunction = () => {
-    if (emojiDisplay == "none") {
-      setEmojiDisplay("");
+  const emojiFunction=() => {
+    if (emojiDisplay=="none") {
+      setEmojiDisplay("")
     } else {
-      setEmojiDisplay("none");
+      setEmojiDisplay("none")
     }
-  };
+  }
 
   //Function to select Emojis.
-  const selectEmoji = () => {
-    let sym = e.unified.split("-");
-    let codeArray = [];
-    codeArray.push("0x" + sym[0]);
-    let emoji = String.fromCodePoint(...codeArray);
-    setInput(input + emoji);
-  };
+  const selectEmoji=() => {
+    let sym=e.unified.split("-")
+    let codeArray=[]
+    codeArray.push("0x"+sym[0])
+    let emoji=String.fromCodePoint(...codeArray)
+    setInput(input+emoji)
+  }
 
   //Function which allows ui to scroll to bottom when new message is typed.
-  const ScrollToBottom = () => {
+  const ScrollToBottom=() => {
     endOfMessageRef.current.scrollIntoView({
       behavior: "smooth",
       block: "start",
-    });
-  };
+    })
+  }
 
   //Function to send Message.
-  const sendMessage = (event) => {
-    event.preventDefault();
+  const sendMessage=(event) => {
+    event.preventDefault()
     //When a user sends message change their last seen on DB.
     db.collection("users").doc(user.uid).set(
       {
         lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
       },
-      { merge: true }
-    );
+      {merge: true}
+    )
     //Add Message to current group in DB.
     db.collection("groups").doc(router.query.id).collection("messages").add({
       timestamp: firebase.firestore.FieldValue.serverTimestamp(),
       message: input,
       user: user.email,
       photoURL: user.photoURL,
-    });
-    setInput("");
-    setEmojiDisplay("none");
-    ScrollToBottom();
-  };
+    })
+    setInput("")
+    setEmojiDisplay("none")
+    ScrollToBottom()
+  }
 
   return (
     <Container>
@@ -141,23 +153,31 @@ function GroupScreen({ group, messages }) {
         <Hidden mdUp>
           <ArrowBackIos
             onClick={() => router.push("/")}
-            style={{ marginRight: "5px" }}
+            style={{marginRight: "5px"}}
           />
         </Hidden>
-        {group.photoURL ? (
+        {group.photoURL? (
           <Avatar src={group.photoURL} />
-        ) : (
+        ):(
           <Avatar>{group.groupName?.[0]}</Avatar>
         )}
         <HeaderInfo>
           <h3>{group?.groupName}</h3>
         </HeaderInfo>
         <HeaderIcons>
-          <IconButton onClick={(e) => setMenuToggle(e.currentTarget)}>
+          <HeaderButton onClick={() => setAddButton(true)}>
             <Group />
-          </IconButton>
-          <Menu
-            style={{ marginTop: "50px", marginRight: "50px" }}
+          </HeaderButton>
+          <Dialog
+            fullScreen={fullScreen}
+            open={addButton} 
+            onClose={() => setAddButton(!addButton)}
+            aria-labelledby="responsive-dialog-title"
+          >
+            <DialogTitle>Members</DialogTitle>
+          </Dialog>
+          {/* <Menu
+            style={{marginTop: "50px", marginRight: "50px"}}
             id="menu"
             anchorEl={menuToggle}
             keepMounted
@@ -165,15 +185,20 @@ function GroupScreen({ group, messages }) {
             onClose={() => setMenuToggle(null)}
           >
             {userNames.map((name) => {
-              return <MenuItem>{name}</MenuItem>;
+              return <MenuItem>{name}</MenuItem>
             })}
-          </Menu>
-          <IconButton>
-            <AttachFile style={{ color: "white" }} />
-          </IconButton>
-          <IconButton>
+            {
+              
+            }
+          </Menu> */}
+
+
+          <HeaderButton>
+            <AttachFile />
+          </HeaderButton>
+          <HeaderButton>
             <MoreVert />
-          </IconButton>
+          </HeaderButton>
         </HeaderIcons>
       </Header>
       <MessageContainer>
@@ -190,20 +215,20 @@ function GroupScreen({ group, messages }) {
           <ArrowForwardIos onClick={sendMessage} />
         </MainInput>
         <Picker
-          style={{ width: "100%", display: emojiDisplay, marginTop: "20px" }}
+          style={{width: "100%", display: emojiDisplay, marginTop: "20px"}}
           onSelect={selectEmoji}
         />
       </InputContainer>
     </Container>
-  );
+  )
 }
 
-export default GroupScreen;
+export default GroupScreen
 
-const Container = styled.div`
+const Container=styled.div`
   flex: 1;
-`;
-const Header = styled.div`
+`
+const Header=styled.div`
   position: sticky;
   background: #0fa;
   background: linear-gradient(90deg, #7916dd, #0fa);
@@ -215,9 +240,9 @@ const Header = styled.div`
   align-items: center;
   height: 80px;
   border-bottom: 1px solid whitesmoke;
-`;
+`
 
-const HeaderInfo = styled.div`
+const HeaderInfo=styled.div`
  margin-left: 15px;
   flex: 1;
 
@@ -253,20 +278,20 @@ const HeaderInfo = styled.div`
       font-size: 1em;
     }
   }
-`;
+`
 
-const HeaderIcons = styled.div``;
+const HeaderIcons=styled.div``
 
-const MessageContainer = styled.div`
+const MessageContainer=styled.div`
   padding: 30px;
   min-height: 90vh;
-`;
+`
 
-const EndOfMessage = styled.div`
+const EndOfMessage=styled.div`
   margin-bottom: 50px;
-`;
+`
 
-const Input = styled.input`
+const Input=styled.input`
   flex: 1;
   outline: 0;
   border: none;
@@ -276,9 +301,9 @@ const Input = styled.input`
   padding: 20px;
   margin-left: 15px;
   margin-right: 15px;
-`;
+`
 
-const InputContainer = styled.form`
+const InputContainer=styled.form`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -287,22 +312,22 @@ const InputContainer = styled.form`
   bottom: 0;
   background-color: white;
   z-index: 100;
-`;
+`
 
-const MainInput = styled.div`
+const MainInput=styled.div`
   display: flex;
   width: 100%;
   align-items: center;
-`;
+`
 
-const ViewUsers = styled(Button)`
+const ViewUsers=styled(Button)`
   &&& {
     border-radius: 50px;
     font-size: 0.5em;
   }
-`;
+`
 
-const Emoticon = styled(InsertEmoticon)`
+const Emoticon=styled(InsertEmoticon)`
   
   &&&{
     transition: transform .2s;
@@ -311,4 +336,17 @@ const Emoticon = styled(InsertEmoticon)`
     transform: scale(1.5);
   }
  
-`;
+`
+
+const HeaderButton=styled(IconButton)`
+  
+  &&&{
+    transition: transform .2s;
+  }
+  :hover {
+    transform: scale(1.2);
+    color: whitesmoke;
+  }
+ 
+`
+
