@@ -64,7 +64,7 @@ function Chat({id, users, groupName, groupURL, color}) {
       {reciepent? (
         <UserAvatar src={reciepent?.photoURL} />
       ):(
-        <UserAvatar>{reciepentEmail[0]}</UserAvatar>
+        <UserAvatar>{reciepentEmail?.[0]}</UserAvatar>
       )}
       <p>{reciepent?.name}</p>
       {
@@ -99,6 +99,7 @@ const Delete=styled(IconButton)`
     &&&{
       margin-left: auto;
       transition: transform .2s;
+      z-index: 10;
     }
 
     :hover{

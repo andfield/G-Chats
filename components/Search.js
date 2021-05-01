@@ -10,7 +10,8 @@ function SearchBar({uEmail}) {
   const router=useRouter()
 
   //States
-  const [open, setOpen]= useState(false)
+  const [open, setOpen]=useState(false)
+  const [searchedEmail, setSearchedEmail]=useState("")
 
   //Function to query in DB and select all the fields which match the search input.
   const loadOptions=async (inputValue) => {
@@ -40,24 +41,22 @@ function SearchBar({uEmail}) {
 
   //Function to redirect to chat screen
   const openChat=async (name) => {
-    const email=name.value
-    console.log(email)
+    console.log(name.value)
+    setSearchedEmail(name.value)
+
     //If the selected name has a Chat with user ? redrict to the chat else open dialog asking user if they want to start a chat with choosen user.  
-    if (email != uEmail) {
-      const chat = await db
+    if (searchedEmail!=uEmail) {
+      const chat=await db
         .collection("chats")
-        .where("users", "array-contains", email)
+        .where("users", "array-contains", searchedEmail)
         .get()
       chat.docs.map((doc) => {
         if (doc.data().users.includes(uEmail)) {
           router.push(`/chat/${doc.id}`)
         }
-        else {
-          //Open dialog here
-          setOpen(!open)
-          console.log(open)
-          console.log(email)
-        }
+         else {
+           setOpen(!open)
+         }
       })
     }
     else {
@@ -70,7 +69,7 @@ function SearchBar({uEmail}) {
       <Select
         loadOptions={loadOptions}
         onChange={openChat}
-        placeholder="Search"
+        placeholder="Search to cure boredom..."
       />
       <Dialog open={open} aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
@@ -83,10 +82,10 @@ function SearchBar({uEmail}) {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button  color="primary" onClick={() => setOpen(false)}>
+          <Button color="primary" onClick={() => setOpen(false)}>
             Disagree
           </Button>
-          <Button color="primary" autoFocus onClick={() => }>
+          <Button color="primary" autoFocus>
             Agree
           </Button>
         </DialogActions>
