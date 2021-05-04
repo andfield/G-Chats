@@ -22,11 +22,14 @@ import { useState, useContext } from "react";
 import SearchBar from "./Search";
 import Fade from "react-reveal/Fade";
 import { DrawerContext } from "../Context/DrawerContext";
-import {Router} from 'next/router'
+import {useRouter} from 'next/router'
 
 function Sidebar() {
   //Get user from use auth state.
   const [user] = useAuthState(auth);
+
+  //router initiallization.
+  const Router = useRouter();
 
   //Get the display status from drawer context.
   const { drawerStatus, changeStatus } = useContext(DrawerContext);
