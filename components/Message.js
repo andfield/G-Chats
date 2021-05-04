@@ -28,15 +28,18 @@ function Message({ user, message }) {
 
   //Delete current message
   const deleteChat = () => {
-      db.collection('chats').doc(router.query.id).collection('messages').doc(message.id).delete();
-  }
-
+    db.collection("chats")
+      .doc(router.query.id)
+      .collection("messages")
+      .doc(message.id)
+      .delete();
+  };
 
   //Determine who is sender or reciever.
   const TypeOfMessage = user === userLoggedIn.email ? Sender : Reciever;
 
   return (
-    <Container>
+    <Container onClick={() => setDeleteIconTrigger(!deleteIconTrigger)}>
       {user != userLoggedIn.email ? (
         <>
           <Icon src={messageUser} />
@@ -52,7 +55,7 @@ function Message({ user, message }) {
       ) : (
         <>
           <TypeOfMessage>
-            {message.message}
+            {deleteIconTrigger ? <p>Don't delete me.</p> : message.message}
             <TimeStamp>
               {message.timestamp
                 ? moment(message.timestamp).format("LT")
@@ -68,7 +71,10 @@ function Message({ user, message }) {
               onClick={() => deleteChat()}
             />
           ) : (
-            <Icon src={messageUser} onClick={() =>setDeleteIconTrigger(!deleteIconTrigger)}/>
+            <Icon
+              src={messageUser}
+              onClick={() => setDeleteIconTrigger(!deleteIconTrigger)}
+            />
           )}
         </>
       )}
