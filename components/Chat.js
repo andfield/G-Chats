@@ -5,16 +5,18 @@ import {auth, db} from "../firebase"
 import {useAuthState} from "react-firebase-hooks/auth"
 import {useCollection} from "react-firebase-hooks/firestore"
 import {useRouter} from "next/router"
-import {useState} from "react"
+import {useState, useEffect} from "react"
 import DeleteIcon from '@material-ui/icons/Delete'
 
-function Chat({id, users, groupName, groupURL, color}) {
+
+function Chat({id, users, groupName, groupURL, color, isActive}) {
 
   //Router
   const router=useRouter()
 
   //States.
   const [touch, setTouch]=useState(false)
+
 
   //Current User.
   const [user]=useAuthState(auth)
@@ -60,15 +62,15 @@ function Chat({id, users, groupName, groupURL, color}) {
       <p>{groupName}</p>
     </Container>
   ):(
-    <Container onClick={enterChat} color={color} onMouseEnter={() => setTouch(!touch)} onMouseLeave={() => setTouch(!touch)}>
+    <Container isActive={isActive} color={color} onMouseEnter={() => setTouch(!touch)} onMouseLeave={() => setTouch(!touch)}>
       {reciepent? (
         <UserAvatar src={reciepent?.photoURL} />
       ):(
         <UserAvatar>{reciepentEmail?.[0]}</UserAvatar>
       )}
-      <p>{reciepent?.name}</p>
+      <Name onClick={enterChat}>{reciepent?.name}</Name>
       {
-        touch?
+        touch && router.asPath != `/chat/${id}`?
           <Delete onClick={deleteChat}>
             <DeleteIcon />
           </Delete>:null
@@ -85,6 +87,7 @@ const Container=styled.div`
   cursor: pointer;
   padding: 15px;
   word-break: break-word;
+  background-color: ${(props) => (props.isActive ? props.color: "white")};
   :hover {
     background-color: ${(props) => (props.color? props.color:"#c68cff")};
   }
@@ -94,6 +97,21 @@ const UserAvatar=styled(Avatar)`
   margin: 5px;
   margin-right: 15px;
 `
+
+const Name = styled.p`
+  
+  &&&{
+    transition: transform .2s ease-in-out;
+    padding-left: 5px;
+  }
+
+  :hover{
+    color: white;
+    text-shadow: 1px 1px 2px black;
+    font-weight: bold;
+    transform: scale(1.2);
+  }
+`;
 
 const Delete=styled(IconButton)`
     &&&{

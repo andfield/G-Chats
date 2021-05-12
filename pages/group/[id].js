@@ -14,9 +14,9 @@ function Group({group, messages}) {
       <Head>
           <title>{group.groupName}</title>
       </Head>
-    <Hidden mdDown>
-        <Sidebar />
-    </Hidden>
+    
+        <Drawer />
+    
     <ChatContainer>
         <GroupScreen group={group} messages={messages}/>
     </ChatContainer>
@@ -84,3 +84,9 @@ const ChatContainer=styled.div`
   /* For Firefox */
   scrollbar-width: none;
 `
+
+const Drawer = styled(Sidebar)`
+
+    display: "";
+
+`;

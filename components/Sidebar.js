@@ -18,7 +18,7 @@ import * as EmailValidator from "email-validator";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useCollection } from "react-firebase-hooks/firestore";
 import Chat from "../components/Chat";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import SearchBar from "./Search";
 import Fade from "react-reveal/Fade";
 import { DrawerContext } from "../Context/DrawerContext";
@@ -30,6 +30,7 @@ function Sidebar() {
 
   //router initiallization.
   const Router = useRouter();
+
 
   //Get the display status from drawer context.
   const { drawerStatus, changeStatus } = useContext(DrawerContext);
@@ -196,7 +197,7 @@ function Sidebar() {
             index % 2 == 0 ? (
               <>
                 <Chat
-                  key={group.id}
+                  key={group.index}
                   id={group.id}
                   users={["", ""]}
                   groupName={group.data().groupName}
@@ -208,7 +209,7 @@ function Sidebar() {
             ) : (
               <>
                 <Chat
-                  key={group.id}
+                  key={group.index}
                   id={group.id}
                   users={["", ""]}
                   groupName={group.data().groupName}
@@ -223,11 +224,12 @@ function Sidebar() {
             index % 2 == 0 ? (
               <>
                 <Chat
-                  key={chat.id}
+                  key={chat.index}
                   id={chat.id}
                   users={chat.data().users}
                   groupName={""}
                   groupURL={""}
+                  isActive={Router.asPath == `/chat/${chat.id}`? true : false}
                   color="#dab5ff"
                 />
                 <Divider />
@@ -235,12 +237,13 @@ function Sidebar() {
             ) : (
               <>
                 <Chat
-                  key={chat.id}
+                  key={chat.index}
                   id={chat.id}
                   users={chat.data().users}
                   groupName={""}
                   groupURL={""}
                   color="#fffcad"
+                  isActive={Router.asPath == `/chat/${chat.id}`? true : false}
                 />
                 <Divider />
               </>
