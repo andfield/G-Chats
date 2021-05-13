@@ -98,6 +98,10 @@ function SearchBar({uEmail}) {
 
 export default SearchBar
 
+
+//SSR and return 2 lists first list with all the users who have chat with current user 
+//and the other with users who dont have chat with current user.
+
 const Select=styled(AsyncSelect)`
   &&& {
     width: 90%;
