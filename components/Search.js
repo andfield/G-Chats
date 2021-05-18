@@ -1,109 +1,127 @@
-import styled from "styled-components"
-import AsyncSelect from "react-select/async"
-import {useRouter} from "next/router"
-import {db} from "../firebase"
-import {useState} from 'react'
-import {Dialog, DialogActions, DialogContent, DialogTitle, DialogContentText, Button} from '@material-ui/core'
+import styled from "styled-components";
+import Select from "react-select";
+import { useRouter } from "next/router";
+import { db } from "../firebase";
+import { useEffect, useState } from "react";
 
-function SearchBar({uEmail}) {
+function SearchBar({ uEmail }) {
   //Router
-  const router=useRouter()
+  const router = useRouter();
 
   //States
-  const [open, setOpen]=useState(false)
-  const [searchedEmail, setSearchedEmail]=useState("")
+  const [userList, setUserList] = useState([]);
+  const [groupList, setGroupList] = useState([]);
+  const [userInput, setUserInput] = useState("");
 
-  //Function to query in DB and select all the fields which match the search input.
-  const loadOptions=async (inputValue) => {
-    return new Promise((resolve) => {
+  // Grouped options
+  const groupedOptions = [
+    {
+      label: "People",
+      options: userList,
+    },
+    {
+      label: "Groups",
+      options: groupList,
+    },
+  ];
+
+  //Use effect to get all the data from firebase.
+  useEffect(() => {
+    function getData() {
+      const users = [];
+      const groups = [];
       db.collection("users")
-        .orderBy("name")
-        .startAt(inputValue)
-        .endAt(inputValue+"\uf8ff")
         .get()
-        .then((docs) => {
-          if (!docs.empty) {
-            let options=[]
-            docs.forEach((user) => {
-              const val={
-                value: user.data().email,
-                label: user.data().name,
-              }
-              options.push(val)
-            })
-            return resolve(options)
-          } else {
-            return resolve([])
+        .then((snapshot) => {
+          snapshot.docs.forEach((user) => {
+            let obj = {
+              ["label"]: user.data().name,
+              ["email"]: user.data().email,
+              ["type"]: "user",
+            };
+            users.push(obj);
+          });
+          setUserList(users);
+        });
+
+      db.collection("groups")
+        .get()
+        .then((snapshot) => {
+          snapshot.docs.forEach((group) => {
+            let obj = {
+              ["label"]: group.data().groupName,
+              ["id"]: group.id,
+              ["type"]: "group",
+            };
+            groups.push(obj);
+          });
+          setGroupList(groups);
+        });
+    }
+    getData();
+  }, []);
+
+  //Handle search changes
+  async function handleSearchChange(name) {
+
+    //If searched value is a user find if the current user has a chat with him.
+    if (name.type === "user") {
+      //check if the selected user is not current user.
+      if (name.email != uEmail) {
+        //Create a chats ref and find all the chats where the searched user is.
+        const chats = await db
+          .collection("chats")
+          .where("users", "array-contains", name.email)
+          .get()
+          //If the Searched user has no chat at all.
+          if(chats.docs.length < 1){
+            createNewChat(name.email)
           }
-        })
-    })
-  }
-
-  //Function to redirect to chat screen
-  const openChat=async (name) => {
-    console.log(name.value)
-    setSearchedEmail(name.value)
-
-    //If the selected name has a Chat with user ? redrict to the chat else open dialog asking user if they want to start a chat with choosen user.  
-    if (searchedEmail!=uEmail) {
-      const chat=await db
-        .collection("chats")
-        .where("users", "array-contains", searchedEmail)
-        .get()
-      chat.docs.map((doc) => {
-        if (doc.data().users.includes(uEmail)) {
-          router.push(`/chat/${doc.id}`)
-        }
-         else {
-           setOpen(!open)
-         }
-      })
+          
+          chats.docs.map(chat => {
+            if(chat.data().users.includes(uEmail)){
+              router.push(`/chat/${chat.id}`)
+            }
+            else{
+              createNewChat(name.email)
+            }
+          })
+        
+        
+      }
     }
+    //Else search for current user in that specific group.
     else {
-      alert("Can't chat with yourself G")
     }
   }
 
+  //Create new Chat
+  function createNewChat(email){
+
+    db.collection("chats").add({
+      users: [uEmail, email]
+    }).then(doc => {
+      router.push(`/chat/${doc.id}`)
+    })
+
+  }
+
+  
   return (
     <>
-      <Select
-        loadOptions={loadOptions}
-        onChange={openChat}
+      <Search
+        options={groupedOptions}
         placeholder="Search to cure boredom..."
+        onChange={handleSearchChange}
       />
-      <Dialog open={open} aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">{"Use Google's location service?"}</DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Let Google help apps determine location. This means sending anonymous location data to
-            Google, even when no apps are running.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button color="primary" onClick={() => setOpen(false)}>
-            Disagree
-          </Button>
-          <Button color="primary" autoFocus>
-            Agree
-          </Button>
-        </DialogActions>
-
-      </Dialog>
-
     </>
-  )
+  );
 }
 
-export default SearchBar
+export default SearchBar;
 
-
-//SSR and return 2 lists first list with all the users who have chat with current user 
-//and the other with users who dont have chat with current user.
-
-const Select=styled(AsyncSelect)`
+const Search = styled(Select)`
   &&& {
     width: 90%;
   }
-`
+`;
