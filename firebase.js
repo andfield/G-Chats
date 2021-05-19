@@ -2,12 +2,12 @@ import firebase from "firebase";
 
 //Firebase config
 const firebaseConfig = {
-  apiKey: "AIzaSyC0xS_FDlpkulaQcXUZsjT8H2mgq7jIT1U",
-  authDomain: "g-chats-andfield.firebaseapp.com",
-  projectId: "g-chats-andfield",
-  storageBucket: "g-chats-andfield.appspot.com",
-  messagingSenderId: "547822548837",
-  appId: "1:547822548837:web:bb912be9d5232096d1938c",
+  apiKey: "AIzaSyAUBJuuT8gbzv1HLle1PbHJMkCakuswdkI",
+  authDomain: "g-chats-5e994.firebaseapp.com",
+  projectId: "g-chats-5e994",
+  storageBucket: "g-chats-5e994.appspot.com",
+  messagingSenderId: "292531634074",
+  appId: "1:292531634074:web:67a9fc81261c471cd04423"
 };
 
 //Setup and initiallize the Application but make sure its only done once
