@@ -3,6 +3,7 @@ import Select from "react-select";
 import { useRouter } from "next/router";
 import { db } from "../firebase";
 import { useEffect, useState } from "react";
+import firebase from 'firebase'
 
 function SearchBar({ uEmail }) {
   //Router
@@ -92,6 +93,21 @@ function SearchBar({ uEmail }) {
     }
     //Else search for current user in that specific group.
     else {
+      if(name.type === 'group'){
+        //Create a groups ref and find the searched group.
+        const group = await db
+        .collection("groups")
+        .doc(name?.id)
+        .get()
+
+        //If the user is already in that group just redirect.
+        if(group.data().users.includes(uEmail)){
+          router.push(`/group/${name?.id}`)
+        }
+
+        //Else add them to the group and redirect.
+        addUserToGroup(name?.id)
+      }
     }
   }
 
@@ -102,6 +118,16 @@ function SearchBar({ uEmail }) {
       users: [uEmail, email]
     }).then(doc => {
       router.push(`/chat/${doc.id}`)
+    })
+  }
+
+  //Add current user to a group.
+  function addUserToGroup(gid) {
+
+    db.collection("groups").doc(gid).update({
+      users: firebase.firestore.FieldValue.arrayUnion(uEmail)
+    }).then(() => {
+      router.push(`/group/${gid}`)
     })
 
   }
