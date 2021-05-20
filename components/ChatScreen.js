@@ -64,7 +64,7 @@ function ChatScreen({ chat, messages }) {
           message={{
             ...message.data(),
             timestamp: message.data().timestamp?.toDate().getTime(),
-            id: message.id
+            id: message.id,
           }}
         />
       ));
@@ -94,12 +94,43 @@ function ChatScreen({ chat, messages }) {
       { merge: true }
     );
 
-    db.collection("chats").doc(router.query.id).collection("messages").add({
-      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-      message: input,
-      user: user.email,
-      photoURL: user.photoURL,
-    });
+    db.collection("chats")
+      .doc(router.query.id)
+      .collection("messages")
+      .add({
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        message: input,
+        user: user.email,
+        photoURL: user.photoURL,
+      })
+      .then(() => {
+        //We have reciepents ID.
+        let reciepentID = ""; 
+        
+        reciepentSnapshot.docs.map((reciepent) => {
+          reciepentID = reciepent.id;
+        });
+        
+        //We have timestamp
+        const timestamp = firebase.firestore.FieldValue.serverTimestamp()
+
+        //Call a react hook to add Notification to reciepent.
+        db.collection("users")
+        .doc(reciepentID)
+        .collection("notifications")
+        .add({
+          sender: user.displayName,
+          docID: chat.id,
+          message: input,
+          timestamp: timestamp,
+          type: 'message',
+          status: 'active'
+        })
+        .then(() => console.log("Notification sent."));
+
+
+
+      });
 
     setInput("");
     setEmojiDisplay("none");
