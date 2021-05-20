@@ -23,7 +23,7 @@ function HomePage() {
       <ChatContainer>
         <HomeScreenContainer>
           <RoundedImg src="Gif.gif" alt="logo" />
-          <h1>Welcome to G-Chats
+          <h1 className="title">Welcome to G-Chats
             {console.log(drawerStatus)}
           </h1>
           <p>
@@ -70,12 +70,13 @@ const HomeScreenContainer = styled.div`
   > h1 {
     align-self: center;
     margin-top: -100px;
-    font-size: 2.9em;
+    font-size: 5em;
+    font-weight: 550;
   }
 
   > p {
     align-self: center;
-    margin-top: 5px;
+    margin-top: -20px;
     font-size: 1.5em;
     text-align: center;
   }

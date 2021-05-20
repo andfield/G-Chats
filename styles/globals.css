@@ -6,6 +6,8 @@ body {
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 }
 
+@import url('http://fonts.cdnfonts.com/css/billabong');
+
 a {
   color: inherit;
   text-decoration: none;
@@ -22,4 +24,8 @@ a {
 
 .emoji:hover{
   transform: scale(1.5);
+}
+
+.title {
+  font-family: 'Billabong', sans-serif !important;
 }

@@ -31,11 +31,10 @@ function Sidebar() {
   //router initiallization.
   const Router = useRouter();
 
-
   //Get the display status from drawer context.
   const { drawerStatus, changeStatus } = useContext(DrawerContext);
 
-  //Menubar state.
+  //States.
   const [menuToggle, setMenuToggle] = useState(null);
   const [name, setName] = useState("none");
 
@@ -133,17 +132,17 @@ function Sidebar() {
 
   return (
     <Container display={drawerStatus}>
-      <Header>
-        <UserAvatar
-          src={user.photoURL}
-          onClick={() => Router.push("/")}
-          onMouseEnter={() => setName("inline")}
-          onMouseLeave={() => setName("none")}
-          style={{ zIndex: "2" }}
-        />
+      <Header
+        onMouseEnter={() => setName("inline")}
+        onMouseLeave={() => setName("none")}
+      >
+        <UserAvatar src={user.photoURL} onClick={() => Router.push("/")} />
 
-        <Fade left when={name == "inline"}>
-          <UName style={{ display: name }}>{user.displayName}</UName>
+        <Fade cascade when={name === "inline"} style={{}}>
+          <UName className="title" style={{ display: name}}>
+            {user.displayName.charAt(0).toUpperCase() +
+              user.displayName.slice(1)}
+          </UName>
         </Fade>
 
         <IconsContainer>
@@ -229,7 +228,7 @@ function Sidebar() {
                   users={chat.data().users}
                   groupName={""}
                   groupURL={""}
-                  isActive={Router.asPath == `/chat/${chat.id}`? true : false}
+                  isActive={Router.asPath == `/chat/${chat.id}` ? true : false}
                   color="#dab5ff"
                 />
                 <Divider />
@@ -243,7 +242,7 @@ function Sidebar() {
                   groupName={""}
                   groupURL={""}
                   color="#fffcad"
-                  isActive={Router.asPath == `/chat/${chat.id}`? true : false}
+                  isActive={Router.asPath == `/chat/${chat.id}` ? true : false}
                 />
                 <Divider />
               </>
@@ -291,8 +290,10 @@ const Header = styled.div`
 
 const UserAvatar = styled(Avatar)`
   cursor: pointer;
+  transition: transform 0.5s;
+
   :hover {
-    opacity: 0.8;
+    transform: scale(1.3);
   }
 `;
 
@@ -345,10 +346,12 @@ const NewGroup = styled(Button)`
 `;
 
 const UName = styled.h1`
-  font-size: 1.2em;
-  color: white;
-  margin-left: -30px;
-  z-index: -2;
+  &&& {
+    font-size: 2em;
+    letter-spacing: 0.15em;
+    color: white;
+    margin-left: -30px;
+  }
 `;
 
 const IconBtn = styled(IconButton)`
