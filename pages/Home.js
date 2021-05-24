@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import Head from "next/head";
+import Image from "next/image"
 import Sidebar from "../components/Sidebar";
 import ChatScreen from "../components/ChatScreen";
 import { auth, db } from "../firebase";
@@ -22,9 +23,8 @@ function HomePage() {
       {drawerStatus == true ? <Sidebar /> : null}
       <ChatContainer>
         <HomeScreenContainer>
-          <RoundedImg src="Gif.gif" alt="logo" />
+          <RoundedImg src="/Gif.gif" alt="logo"/>
           <h1 className="title">Welcome to G-Chats
-            {console.log(drawerStatus)}
           </h1>
           <p>
             Select a pre existing chat or create new chat to start talking with
