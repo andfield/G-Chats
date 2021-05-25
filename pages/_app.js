@@ -6,9 +6,8 @@ import Loading from "../components/Loading";
 import { useEffect, useState } from "react";
 import firebase from "firebase";
 import ContextProvider from "../Context/DrawerContext";
-import {useRouter} from 'next/router'
+import { useRouter } from "next/router";
 import { route } from "next/dist/next-server/server/router";
-
 
 function MyApp({ Component, pageProps }) {
   //get the user if anyone is logged in
@@ -18,22 +17,20 @@ function MyApp({ Component, pageProps }) {
   const [loadScreen, setLoadScreen] = useState(false);
 
   //Router
-  const router = useRouter()
+  const router = useRouter();
 
   //when the router is between routes return loading screeen
   useEffect(() => {
-   
-    const updateLoadingStatus = () => setLoadScreen(!loadScreen)
+    const updateLoadingStatus = () => setLoadScreen(!loadScreen);
 
-    router.events.on('routeChangeStart', updateLoadingStatus);
-    router.events.on('routeChangeComplete', updateLoadingStatus)
-     
+    router.events.on("routeChangeStart", updateLoadingStatus);
+    router.events.on("routeChangeComplete", updateLoadingStatus);
+
     return () => {
-      router.events.off('routeChangeStart', updateLoadingStatus)
-      router.events.off('routeChangeComplete', updateLoadingStatus)
-  }
-  
-  }, [loadScreen])
+      router.events.off("routeChangeStart", updateLoadingStatus);
+      router.events.off("routeChangeComplete", updateLoadingStatus);
+    };
+  }, [loadScreen]);
 
   //when the user first signin capture there details using useEffect.
   useEffect(() => {
@@ -57,13 +54,13 @@ function MyApp({ Component, pageProps }) {
   if (!user) return <Login />;
 
   //return loading screen on route change.
-  if(loadScreen) return <Loading />
+  if (loadScreen) return <Loading />;
 
   return (
     <ContextProvider>
-      <Component {...pageProps} />)
+      <Component {...pageProps} />
     </ContextProvider>
-  );
+  )
 }
 
 export default MyApp;

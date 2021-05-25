@@ -12,11 +12,11 @@ if (!ISSERVER) {
   //Access localstorage.
   storage = localStorage.getItem("drawerStatus")
     ? JSON.parse(localStorage.getItem("drawerStatus"))
-    : true
+    : "inline"
 }
 
 //Initiate a React State to store all the Context related eg. Color
-const initialState = { drawerStatus: true };
+const initialState = { drawerStatus: "inline" };
 
 //Initiate a context provider which will make this context globally excessible
 const ContextProvider = ({ children }) => {

@@ -12,8 +12,7 @@ function SearchBar({ uEmail }) {
   //States
   const [userList, setUserList] = useState([]);
   const [groupList, setGroupList] = useState([]);
-  const [userInput, setUserInput] = useState("");
-
+  
   // Grouped options
   const groupedOptions = [
     {

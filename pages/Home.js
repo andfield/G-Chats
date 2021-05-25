@@ -20,7 +20,7 @@ function HomePage() {
       <Head>
         <title>Sup! {user?.displayName}</title>
       </Head>
-      {drawerStatus == true ? <Sidebar /> : null}
+      {drawerStatus == "inline" ? <Sidebar /> : null}
       <ChatContainer>
         <HomeScreenContainer>
           <RoundedImg src="/Gif.gif" alt="logo"/>

@@ -129,7 +129,7 @@ function Sidebar() {
             index % 2 == 0 ? (
               <>
                 <Chat
-                  key={group.index}
+                  key={index}
                   id={group.id}
                   users={["", ""]}
                   groupName={group.data().groupName}
@@ -141,7 +141,7 @@ function Sidebar() {
             ) : (
               <>
                 <Chat
-                  key={group.index}
+                  key={index}
                   id={group.id}
                   users={["", ""]}
                   groupName={group.data().groupName}
@@ -156,7 +156,7 @@ function Sidebar() {
             index % 2 == 0 ? (
               <>
                 <Chat
-                  key={chat.index}
+                  key={index}
                   id={chat.id}
                   users={chat.data().users}
                   groupName={""}
@@ -169,7 +169,7 @@ function Sidebar() {
             ) : (
               <>
                 <Chat
-                  key={chat.index}
+                  key={index}
                   id={chat.id}
                   users={chat.data().users}
                   groupName={""}
@@ -181,6 +181,10 @@ function Sidebar() {
               </>
             )
           )}
+
+      <Footer>
+        
+      </Footer>
     </Container>
   );
 }
@@ -189,7 +193,7 @@ export default Sidebar;
 
 //styled components
 const Container = styled.div`
-  display: ${(props) => (props.display ? "" : "none")};
+  display: ${(props) => (props.display === "inline" ? "inline" : "none")};
   flex: 1;
   border-right: 1px solid whitesmoke;
   height: 100vh;
@@ -226,6 +230,17 @@ const ButtonDiv = styled.div`
   align-items: center;
   display: flex;
   flex-direction: column;
+`;
+
+const Footer = styled.div`
+
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 50px;
+  background-color: lightgray;
+
+
 `;
 
 const NewChat = styled(Button)`
