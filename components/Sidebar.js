@@ -1,10 +1,6 @@
 import styled from "styled-components";
-import Header from "./Header"
-import {
-  Button,
-  ButtonGroup,
-  Divider,
-} from "@material-ui/core";
+import Header from "./Header";
+import { Button, ButtonGroup, Divider } from "@material-ui/core";
 
 import SearchIcon from "@material-ui/icons/Search";
 import { auth, db } from "../firebase";
@@ -27,10 +23,6 @@ function Sidebar() {
 
   //Get the display status from drawer context.
   const { drawerStatus, changeStatus } = useContext(DrawerContext);
-
-  // //States.
-  // const [menuToggle, setMenuToggle] = useState(null);
-  // const [name, setName] = useState("none");
 
   //Group visible state.
   const [group, setGroup] = useState(false);
@@ -80,7 +72,28 @@ function Sidebar() {
     return true;
   };
 
-
+  //Function to create new chat.
+  const createChat = async () => {
+    //Prompt user to get an email.
+    const input = prompt(
+      "Please enter an email of the user you want to chat with."
+    );
+    if (!input) return null;
+    //Check if the email is valid
+    if (
+      EmailValidator.validate(input) &&
+      !chatAlreadyExists(input) &&
+      input !== user.email
+    ) {
+      if ((await hasAnAccount(input)) == true) {
+        // If email is valid and the chat doesnt exists push to DB Chats collection.
+        db.collection("chats").add({
+          //adding email for now but try using name later.
+          users: [user.email, input],
+        });
+      } else alert("User does not exist");
+    } else alert("Invalid user please check if a chat already exists.");
+  };
 
   //Function to create new chat room.
   const createGroup = async () => {
@@ -104,19 +117,19 @@ function Sidebar() {
 
   return (
     <Container display={drawerStatus}>
-      <Header />
+      <Header createChat={createChat}/>
       <Search>
         <SearchBar uEmail={user.email} style={{ width: "200px" }} />
       </Search>
 
-      {/* <ButtonDiv>
+      <ButtonDiv>
         <NewChat onClick={createChat} variant="outlined">
           Star a new chat
         </NewChat>
         <NewGroup onClick={createGroup} variant="outlined">
           Star a new group
         </NewGroup>
-      </ButtonDiv> */}
+      </ButtonDiv>
 
       <ButtonGroup style={{ width: "100%", marginTop: "10px" }}>
         <NewChat onClick={() => setGroup(false)}>People</NewChat>
@@ -183,7 +196,7 @@ function Sidebar() {
           )}
 
       <Footer>
-        
+        <p>{new Date().getFullYear()} &copy; <a href="https://sid-thakur.vercel.app">Sid Thakur</a></p>
       </Footer>
     </Container>
   );
@@ -233,14 +246,16 @@ const ButtonDiv = styled.div`
 `;
 
 const Footer = styled.div`
-
   position: absolute;
   bottom: 0;
-  width: 100%;
+  width: 370px;
   height: 50px;
-  background-color: lightgray;
-
-
+  font-weight: 300;
+  border-top: solid 1px lightgray;
+  text-align: center;
+  @media (max-width: 768px){
+    width: 100%;
+  }
 `;
 
 const NewChat = styled(Button)`

@@ -9,7 +9,7 @@ import ArrowBackIos from "@material-ui/icons/ArrowBack";
 import { useState } from "react";
 import { useRouter } from "next/router";
 
-function Header() {
+function Header(props) {
   //Get user from use auth state.
   const [user] = useAuthState(auth);
 
@@ -19,29 +19,6 @@ function Header() {
 
   //router initiallization.
   const Router = useRouter();
-
-  //Function to create new chat.
-  const createChat = async () => {
-    //Prompt user to get an email.
-    const input = prompt(
-      "Please enter an email of the user you want to chat with."
-    );
-    if (!input) return null;
-    //Check if the email is valid
-    if (
-      EmailValidator.validate(input) &&
-      !chatAlreadyExists(input) &&
-      input !== user.email
-    ) {
-      if ((await hasAnAccount(input)) == true) {
-        // If email is valid and the chat doesnt exists push to DB Chats collection.
-        db.collection("chats").add({
-          //adding email for now but try using name later.
-          users: [user.email, input],
-        });
-      } else alert("User does not exist");
-    } else alert("Invalid user please check if a chat already exists.");
-  };
 
   return (
     <div>
@@ -59,7 +36,7 @@ function Header() {
         </Fade>
 
         <IconsContainer>
-          <IconBtn onClick={createChat} size={"small"}>
+          <IconBtn onClick={props.createChat} size={"small"}>
             <ChatIcon style={{fontSize: 25}}/>
           </IconBtn>
           <IconBtn onClick={(e) => setMenuToggle(e.currentTarget)}>
