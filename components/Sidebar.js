@@ -12,6 +12,7 @@ import { useState, useContext, useEffect } from "react";
 import SearchBar from "./Search";
 import Fade from "react-reveal/Fade";
 import { DrawerContext } from "../Context/DrawerContext";
+import { NotificationContext } from "../Context/NotificationContext";
 import { useRouter } from "next/router";
 
 function Sidebar() {
@@ -21,11 +22,26 @@ function Sidebar() {
   //router initiallization.
   const Router = useRouter();
 
+  //Test
+  const {state} = useContext(NotificationContext);
+
+  useEffect(() => {
+  
+   console.log(state);
+  }, []);
+
   //Get the display status from drawer context.
   const { drawerStatus, changeStatus } = useContext(DrawerContext);
 
   //Group visible state.
   const [group, setGroup] = useState(false);
+
+  // //Create a irl notification ref to db using firebase hooks.
+  const userNotificationRef = db
+    .collection("users")
+    .doc(user.uid)
+    .collection("notifications");
+  const [notificationSnapShot] = useCollection(userNotificationRef);
 
   // Function to check if the reciepent email has an account.
   const hasAnAccount = async (reciepentEmail) => {
@@ -117,11 +133,10 @@ function Sidebar() {
 
   return (
     <Container display={drawerStatus}>
-      <Header createChat={createChat}/>
+      <Header createChat={createChat} />
       <Search>
         <SearchBar uEmail={user.email} style={{ width: "200px" }} />
       </Search>
-
       <ButtonDiv>
         <NewChat onClick={createChat} variant="outlined">
           Star a new chat
@@ -196,7 +211,10 @@ function Sidebar() {
           )}
 
       <Footer>
-        <p>{new Date().getFullYear()} &copy; <a href="https://sid-thakur.vercel.app">Sid Thakur</a></p>
+        <p>
+          {new Date().getFullYear()} &copy;{" "}
+          <a href="https://sid-thakur.vercel.app">Sid Thakur</a>
+        </p>
       </Footer>
     </Container>
   );
@@ -253,7 +271,7 @@ const Footer = styled.div`
   font-weight: 300;
   border-top: solid 1px lightgray;
   text-align: center;
-  @media (max-width: 768px){
+  @media (max-width: 768px) {
     width: 100%;
   }
 `;

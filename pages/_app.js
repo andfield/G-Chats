@@ -6,6 +6,7 @@ import Loading from "../components/Loading";
 import { useEffect, useState } from "react";
 import firebase from "firebase";
 import ContextProvider from "../Context/DrawerContext";
+import NotificationContextProvider from "../Context/NotificationContext";
 import { useRouter } from "next/router";
 import { route } from "next/dist/next-server/server/router";
 
@@ -57,10 +58,12 @@ function MyApp({ Component, pageProps }) {
   if (loadScreen) return <Loading />;
 
   return (
-    <ContextProvider>
-      <Component {...pageProps} />
-    </ContextProvider>
-  )
+    <NotificationContextProvider>
+      <ContextProvider>
+        <Component {...pageProps} />
+      </ContextProvider>
+    </NotificationContextProvider>
+  );
 }
 
 export default MyApp;
