@@ -37,6 +37,8 @@ const NotificationContextProvider = ({ children }) => {
     deleteAllNotifications,
     deleteCurrentNotification,
     ...state,
+  
+  
   };
 
   //Return the notification context provider.
